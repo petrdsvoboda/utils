@@ -61,6 +61,34 @@ export function get<
 	return get(value, key2, key3, key4, key5)
 }
 
+export function set<T extends Map<any>, K1 extends keyof T>(
+	map: T | undefined,
+	value: T[K1],
+	key1: K1
+): T | undefined
+export function set<
+	T extends Map<any>,
+	K1 extends keyof T,
+	K2 extends keyof T[K1]
+>(map: T | undefined, value: T[K1][K2], key1: K1, key2: K2): T | undefined
+export function set<
+	T extends Map<any>,
+	K1 extends keyof T,
+	K2 extends keyof T[K1]
+>(map: T | undefined, value: T[K1] | T[K1][K2], key1: K1, key2?: K2) {
+	if (map === undefined) return undefined
+
+	if (key2 === undefined)
+		return {
+			...map,
+			[key1]: value
+		}
+	return {
+		...map,
+		[key1]: set(map[key1], value, key2)
+	}
+}
+
 export function update<T extends Map<any>, K1 extends keyof T>(
 	map: T,
 	path: [K1],
