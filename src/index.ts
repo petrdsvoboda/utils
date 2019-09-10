@@ -6,7 +6,7 @@ let a: Record<'1' | '2' | '3', { test: string; another: number }> = {
 	'3': { test: '333', another: 333 }
 }
 
-console.log(get(a)(['1']))
+console.log(get(a, '1', 'test'))
 
 console.log(a)
 a = update(a, ['3'], x => ({ ...x, test: 's' }))
