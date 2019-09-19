@@ -118,3 +118,25 @@ export function sort<
 		return compareFn(aVal, bVal, options)
 	})
 }
+
+type MergeOptions = {
+	unique?: boolean
+}
+export function merge(
+	left: any[],
+	right: any[],
+	options?: MergeOptions
+): any[] {
+	if (options && options.unique) {
+		let arr = right.reduce<any[]>(
+			(acc, curr) => (acc.includes(curr) ? acc : [...acc, curr]),
+			[]
+		)
+		return left.reduce<any[]>(
+			(acc, curr) => (acc.includes(curr) ? acc : [...acc, curr]),
+			arr
+		)
+	} else {
+		return [...left, ...right]
+	}
+}

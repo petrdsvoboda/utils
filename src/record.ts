@@ -1,3 +1,4 @@
+import { merge as mergeArray } from './array'
 import { notNil } from './base'
 
 export type Map<T> = { [key in string]: T }
@@ -303,14 +304,18 @@ export function merge<T extends Map<any>, U extends Map<any>>(
 	if (right === undefined) return left
 
 	return Object.keys(right).reduce((acc, curr) => {
-		const leftVal = left[curr]
-		const rightVal = right[curr]
-		let currVal: T | U | undefined
+		const leftVal: any = left[curr]
+		const rightVal: any = right[curr]
+		let currVal: any
 
 		if (typeof leftVal === 'object' && typeof rightVal === 'object') {
 			currVal = merge(leftVal, rightVal)
 		} else if (typeof rightVal === 'object') {
 			currVal = { ...rightVal }
+		} else if (Array.isArray(leftVal) && Array.isArray(rightVal)) {
+			currVal = mergeArray(leftVal, rightVal)
+		} else if (Array.isArray(rightVal)) {
+			currVal = [...rightVal]
 		} else {
 			currVal = rightVal
 		}
