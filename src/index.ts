@@ -9,5 +9,11 @@ let a: Record<'1' | '2' | '3', { test: string; another: number }> = {
 console.log(get(a, '1', 'test'))
 
 console.log(a)
-a = set(a, 'xxxxxx', '1', 'test')
+a = set(a, '1', 'test')('xxx')
+console.log(a)
+a = update(a, '2')(x => ({
+	...x,
+	another: 333
+}))
+a = update(a, '3', 'another')(x => x + 1)
 console.log(a)
