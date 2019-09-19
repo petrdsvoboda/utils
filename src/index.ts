@@ -1,4 +1,5 @@
-import { Map, update, get, set } from './record'
+import { Map, update, get, set, toArray } from './record'
+import { sort } from './array'
 
 let a: Record<'1' | '2' | '3', { test: string; another: number }> = {
 	'1': { test: '111', another: 111 },
@@ -17,3 +18,16 @@ a = update(a, '2')(x => ({
 }))
 a = update(a, '3', 'another')(x => x + 1)
 console.log(a)
+
+let b = toArray(a)
+console.log('')
+console.log(b)
+console.log('')
+b = sort(b, {}, 'another')
+console.log(b)
+console.log('')
+b = sort(b, { ascending: false }, 'another')
+console.log(b)
+console.log('')
+b = sort(b, { ascending: true }, 'test')
+console.log(b)

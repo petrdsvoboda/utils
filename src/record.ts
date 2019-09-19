@@ -1,3 +1,5 @@
+import { notNil } from './base'
+
 export type Map<T> = { [key in string]: T }
 
 export function get<T extends Map<any>, K1 extends keyof T>(
@@ -49,7 +51,7 @@ export function get<
 	K2 extends keyof T[K1],
 	K3 extends keyof T[K1][K2],
 	K4 extends keyof T[K1][K2][K3],
-	K5 extends keyof T[K1][K2][K4]
+	K5 extends keyof T[K1][K2][K3][K4]
 >(map: T | undefined, key1: K1, key2?: K2, key3?: K3, key4?: K4, key5?: K5) {
 	if (map === undefined) return undefined
 
@@ -272,3 +274,6 @@ export function update<
 		}
 	}
 }
+
+export const toArray = <T>(map: Map<T>): T[] =>
+	Object.values(map).filter(notNil)
