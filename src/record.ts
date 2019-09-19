@@ -277,3 +277,47 @@ export function update<
 
 export const toArray = <T>(map: Map<T>): T[] =>
 	Object.values(map).filter(notNil)
+
+export function merge<T extends Map<any>, U extends Map<any>>(
+	left: undefined,
+	right: undefined
+): undefined
+export function merge<T extends Map<any>, U extends Map<any>>(
+	left: T,
+	right: undefined
+): T
+export function merge<T extends Map<any>, U extends Map<any>>(
+	left: undefined,
+	right: U
+): U
+export function merge<T extends Map<any>, U extends Map<any>>(
+	left: T,
+	right: U
+): T & U
+export function merge<T extends Map<any>, U extends Map<any>>(
+	left: T | undefined,
+	right: U | undefined
+) {
+	if (left === undefined && right === undefined) return undefined
+	if (left === undefined) return right
+	if (right === undefined) return left
+
+	return Object.keys(right).reduce((acc, curr) => {
+		const leftVal = left[curr]
+		const rightVal = right[curr]
+		let currVal: T | U | undefined
+
+		if (typeof leftVal === 'object' && typeof rightVal === 'object') {
+			currVal = merge(leftVal, rightVal)
+		} else if (typeof rightVal === 'object') {
+			currVal = { ...rightVal }
+		} else {
+			currVal = rightVal
+		}
+
+		return {
+			...acc,
+			[curr]: currVal
+		}
+	}, left)
+}
