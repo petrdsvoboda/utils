@@ -308,14 +308,17 @@ export function merge<T extends Map<any>, U extends Map<any>>(
 		const rightVal: any = right[curr]
 		let currVal: any
 
-		if (typeof leftVal === 'object' && typeof rightVal === 'object') {
-			currVal = merge(leftVal, rightVal)
-		} else if (typeof rightVal === 'object') {
-			currVal = { ...rightVal }
-		} else if (Array.isArray(leftVal) && Array.isArray(rightVal)) {
+		if (Array.isArray(leftVal) && Array.isArray(rightVal)) {
 			currVal = mergeArray(leftVal, rightVal)
 		} else if (Array.isArray(rightVal)) {
 			currVal = [...rightVal]
+		} else if (
+			typeof leftVal === 'object' &&
+			typeof rightVal === 'object'
+		) {
+			currVal = merge(leftVal, rightVal)
+		} else if (typeof rightVal === 'object') {
+			currVal = { ...rightVal }
 		} else {
 			currVal = rightVal
 		}

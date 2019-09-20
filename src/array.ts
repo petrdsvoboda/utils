@@ -10,7 +10,7 @@ type CompareOptions = {
 }
 
 const compareFn = (a: any, b: any, options?: CompareOptions): CompareResult => {
-	if (a === undefined || a === undefined) return 0
+	if (a === undefined || b === undefined) return 0
 
 	let result: CompareResult = 0
 	if (options && options.isDate) {
@@ -128,11 +128,11 @@ export function merge(
 	options?: MergeOptions
 ): any[] {
 	if (options && options.unique) {
-		let arr = right.reduce<any[]>(
+		let arr = left.reduce<any[]>(
 			(acc, curr) => (acc.includes(curr) ? acc : [...acc, curr]),
 			[]
 		)
-		return left.reduce<any[]>(
+		return right.reduce<any[]>(
 			(acc, curr) => (acc.includes(curr) ? acc : [...acc, curr]),
 			arr
 		)
