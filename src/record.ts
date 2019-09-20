@@ -326,3 +326,26 @@ export function merge<T extends Map<any>, U extends Map<any>>(
 		}
 	}, left)
 }
+
+export function map<T>(map: Map<T>, callback: (value: T) => T): Map<T>
+export function map<T, U>(map: Map<T>, callback: (value: T) => U): Map<U>
+export function map<T, U>(map: Map<T>, callback: (value: T) => T | U) {
+	return Object.keys(map).reduce<Map<T | U>>(
+		(acc, curr) => ({
+			...acc,
+			[curr]: callback(map[curr])
+		}),
+		map
+	)
+}
+
+export function reduce<T, U>(
+	map: Map<T>,
+	callback: (acc: U, curr: T, index: number) => U,
+	initialValue: U
+): U {
+	return Object.keys(map).reduce<U>(
+		(acc, curr, index) => callback(acc, map[curr], index),
+		initialValue
+	)
+}

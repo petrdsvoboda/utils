@@ -1,4 +1,4 @@
-import { Map, update, get, set, toArray, merge } from './record'
+import { Map, update, get, set, toArray, merge, map, reduce } from './record'
 import { sort } from './array'
 
 let a: Record<'1' | '2' | '3', { test: string; another: number }> = {
@@ -41,3 +41,14 @@ console.log(a)
 console.log(c)
 const d = merge(a, c)
 console.log(d)
+
+console.log(a)
+const e = map(a, curr => ({
+	...curr,
+	another: curr.another + 1
+}))
+console.log(e)
+
+console.log(a)
+const f = reduce(a, (acc, curr) => acc + curr.another, 0)
+console.log(f)
