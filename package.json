@@ -8,7 +8,8 @@
 	"scripts": {
 		"start": "ts-node-dev src/index.ts",
 		"test": "jest",
-		"test:coverage": "jest --coverage"
+		"test:coverage": "jest --coverage",
+		"build": "rm -rf lib & tsc"
 	},
 	"dependencies": {},
 	"devDependencies": {
