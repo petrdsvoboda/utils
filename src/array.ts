@@ -10,7 +10,11 @@ type CompareOptions = {
 }
 
 const compareFn = (a: any, b: any, options?: CompareOptions): CompareResult => {
-	if (a === undefined || b === undefined) return 0
+	if (a === undefined || b === undefined) {
+		if (a === undefined && b === undefined) return 0
+		else if (a === undefined) return 1
+		else return -1
+	}
 
 	let result: CompareResult = 0
 	if (options && options.isDate) {
@@ -40,20 +44,20 @@ export function sort<T extends Map<any>, K1 extends keyof T>(
 export function sort<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1]
+	K2 extends keyof NonNullable<T[K1]>
 >(array: T[], options: CompareOptions, key1: K1, key2: K2): T[]
 export function sort<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<NonNullable<T[K1]>[K2]>
 >(array: T[], options: CompareOptions, key1: K1, key2: K2, key3: K3): T[]
 export function sort<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2],
-	K4 extends keyof T[K1][K2][K3]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<T[K1][K2]>,
+	K4 extends keyof NonNullable<T[K1][K2][K3]>
 >(
 	array: T[],
 	options: CompareOptions,
@@ -65,10 +69,10 @@ export function sort<
 export function sort<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2],
-	K4 extends keyof T[K1][K2][K3],
-	K5 extends keyof T[K1][K2][K3][K4]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<T[K1][K2]>,
+	K4 extends keyof NonNullable<T[K1][K2][K3]>,
+	K5 extends keyof NonNullable<T[K1][K2][K3][K4]>
 >(
 	array: T[],
 	options: CompareOptions,

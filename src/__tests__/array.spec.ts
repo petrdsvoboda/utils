@@ -69,9 +69,36 @@ describe('sort', () => {
 
 	test('it should handle undefined values', () => {
 		const input = [{ a: undefined }, { a: 1 }]
-		const output = [{ a: undefined }, { a: 1 }]
+		const output = [{ a: 1 }, { a: undefined }]
 
 		expect(sort(input, {}, 'a')).toEqual(output)
+	})
+
+	test('it should handle nested undefined values', () => {
+		type Values = {
+			a?: { b: number }
+		}
+		const input: Values[] = [{ a: undefined }, { a: { b: 1 } }]
+		const output: Values[] = [{ a: { b: 1 } }, { a: undefined }]
+
+		type Values2 = {
+			a?: { b?: { c: number } }
+		}
+		const input2: Values2[] = [
+			{ a: undefined },
+			{ a: { b: { c: 2 } } },
+			{ a: { b: undefined } },
+			{ a: { b: { c: 1 } } }
+		]
+		const output2: Values2[] = [
+			{ a: { b: { c: 1 } } },
+			{ a: { b: { c: 2 } } },
+			{ a: undefined },
+			{ a: { b: undefined } }
+		]
+
+		expect(sort(input, {}, 'a', 'b')).toEqual(output)
+		expect(sort(input2, {}, 'a', 'b', 'c')).toEqual(output2)
 	})
 })
 
