@@ -10,20 +10,20 @@ export function get<T extends Map<any>, K1 extends keyof T>(
 export function get<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1]
+	K2 extends keyof NonNullable<T[K1]>
 >(map: T | undefined, key1: K1, key2: K2): T[K1][K2] | undefined
 export function get<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<T[K1][K2]>
 >(map: T | undefined, key1: K1, key2: K2, key3: K3): T[K1][K2][K3] | undefined
 export function get<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2],
-	K4 extends keyof T[K1][K2][K3]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<T[K1][K2]>,
+	K4 extends keyof NonNullable<T[K1][K2][K3]>
 >(
 	map: T | undefined,
 	key1: K1,
@@ -34,10 +34,10 @@ export function get<
 export function get<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2],
-	K4 extends keyof T[K1][K2][K3],
-	K5 extends keyof T[K1][K2][K3][K4]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<T[K1][K2]>,
+	K4 extends keyof NonNullable<T[K1][K2][K3]>,
+	K5 extends keyof NonNullable<T[K1][K2][K3][K4]>
 >(
 	map: T | undefined,
 	key1: K1,
@@ -49,10 +49,10 @@ export function get<
 export function get<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2],
-	K4 extends keyof T[K1][K2][K3],
-	K5 extends keyof T[K1][K2][K3][K4]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<T[K1][K2]>,
+	K4 extends keyof NonNullable<T[K1][K2][K3]>,
+	K5 extends keyof NonNullable<T[K1][K2][K3][K4]>
 >(map: T | undefined, key1: K1, key2?: K2, key3?: K3, key4?: K4, key5?: K5) {
 	if (map === undefined) return undefined
 
@@ -71,20 +71,20 @@ export function set<T extends Map<any>, K1 extends keyof T>(
 export function set<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1]
+	K2 extends keyof NonNullable<T[K1]>
 >(map: T | undefined, key1: K1, key2: K2): (value: T[K1][K2]) => T
 export function set<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<T[K1][K2]>
 >(map: T | undefined, key1: K1, key2: K2, key3: K3): (value: T[K1][K2][K3]) => T
 export function set<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2],
-	K4 extends keyof T[K1][K2][K3]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<T[K1][K2]>,
+	K4 extends keyof NonNullable<T[K1][K2][K3]>
 >(
 	map: T | undefined,
 	key1: K1,
@@ -95,10 +95,10 @@ export function set<
 export function set<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2],
-	K4 extends keyof T[K1][K2][K3],
-	K5 extends keyof T[K1][K2][K3][K4]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<T[K1][K2]>,
+	K4 extends keyof NonNullable<T[K1][K2][K3]>,
+	K5 extends keyof NonNullable<T[K1][K2][K3][K4]>
 >(
 	map: T | undefined,
 	key1: K1,
@@ -110,10 +110,10 @@ export function set<
 export function set<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2],
-	K4 extends keyof T[K1][K2][K3],
-	K5 extends keyof T[K1][K2][K3][K4]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<T[K1][K2]>,
+	K4 extends keyof NonNullable<T[K1][K2][K3]>,
+	K5 extends keyof NonNullable<T[K1][K2][K3][K4]>
 >(
 	map: T | undefined,
 	key1: K1,
@@ -184,13 +184,13 @@ export function update<T extends Map<any>, K1 extends keyof T>(
 export function update<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1]
+	K2 extends keyof NonNullable<T[K1]>
 >(map: T | undefined, key1: K1, key2: K2): (callback: UpdateFn<T[K1][K2]>) => T
 export function update<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<T[K1][K2]>
 >(
 	map: T | undefined,
 	key1: K1,
@@ -200,9 +200,9 @@ export function update<
 export function update<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2],
-	K4 extends keyof T[K1][K2][K3]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<T[K1][K2]>,
+	K4 extends keyof NonNullable<T[K1][K2][K3]>
 >(
 	map: T | undefined,
 	key1: K1,
@@ -213,10 +213,10 @@ export function update<
 export function update<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2],
-	K4 extends keyof T[K1][K2][K3],
-	K5 extends keyof T[K1][K2][K3][K4]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<T[K1][K2]>,
+	K4 extends keyof NonNullable<T[K1][K2][K3]>,
+	K5 extends keyof NonNullable<T[K1][K2][K3][K4]>
 >(
 	map: T | undefined,
 	key1: K1,
@@ -228,10 +228,10 @@ export function update<
 export function update<
 	T extends Map<any>,
 	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2],
-	K4 extends keyof T[K1][K2][K3],
-	K5 extends keyof T[K1][K2][K3][K4]
+	K2 extends keyof NonNullable<T[K1]>,
+	K3 extends keyof NonNullable<T[K1][K2]>,
+	K4 extends keyof NonNullable<T[K1][K2][K3]>,
+	K5 extends keyof NonNullable<T[K1][K2][K3][K4]>
 >(
 	map: T,
 	key1: K1,
