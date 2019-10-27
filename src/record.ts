@@ -197,7 +197,7 @@ export function update<
 	record: T | undefined,
 	key1: K1,
 	key2: K2
-): (callback: UpdateFn<NonNullable<T[K1][K2]>>) => T
+): (callback: UpdateFn<NonNullable<NonNullable<T[K1]>[K2]>>) => T
 export function update<
 	T extends Record<string, any>,
 	K1 extends keyof T,
@@ -208,7 +208,9 @@ export function update<
 	key1: K1,
 	key2: K2,
 	key3: K3
-): (callback: UpdateFn<NonNullable<T[K1][K2][K3]>>) => T
+): (
+	callback: UpdateFn<NonNullable<NonNullable<NonNullable<T[K1]>[K2]>[K3]>>
+) => T
 export function update<
 	T extends Record<string, any>,
 	K1 extends keyof T,
@@ -221,7 +223,11 @@ export function update<
 	key2: K2,
 	key3: K3,
 	key4: K4
-): (callback: UpdateFn<NonNullable<T[K1][K2][K3][K4]>>) => T
+): (
+	callback: UpdateFn<
+		NonNullable<NonNullable<NonNullable<NonNullable<T[K1]>[K2]>[K3]>[K4]>
+	>
+) => T
 export function update<
 	T extends Record<string, any>,
 	K1 extends keyof T,
@@ -236,7 +242,15 @@ export function update<
 	key3: K3,
 	key4: K4,
 	key5: K5
-): (callback: UpdateFn<NonNullable<T[K1][K2][K3][K4][K5]>>) => T
+): (
+	callback: UpdateFn<
+		NonNullable<
+			NonNullable<
+				NonNullable<NonNullable<NonNullable<T[K1]>[K2]>[K3]>[K4]
+			>[K5]
+		>
+	>
+) => T
 export function update<
 	T extends Record<string, any>,
 	K1 extends keyof T,
@@ -254,10 +268,20 @@ export function update<
 ): (
 	callback:
 		| UpdateFn<NonNullable<T[K1]>>
-		| UpdateFn<NonNullable<T[K1][K2]>>
-		| UpdateFn<NonNullable<T[K1][K2][K3]>>
-		| UpdateFn<NonNullable<T[K1][K2][K3][K4]>>
-		| UpdateFn<NonNullable<T[K1][K2][K3][K4][K5]>>
+		| UpdateFn<NonNullable<NonNullable<T[K1]>[K2]>>
+		| UpdateFn<NonNullable<NonNullable<NonNullable<T[K1]>[K2]>[K3]>>
+		| UpdateFn<
+				NonNullable<
+					NonNullable<NonNullable<NonNullable<T[K1]>[K2]>[K3]>[K4]
+				>
+		  >
+		| UpdateFn<
+				NonNullable<
+					NonNullable<
+						NonNullable<NonNullable<NonNullable<T[K1]>[K2]>[K3]>[K4]
+					>[K5]
+				>
+		  >
 ) => T | undefined {
 	return callback => {
 		if (record === undefined) return record
@@ -265,7 +289,6 @@ export function update<
 		if (key2 === undefined) {
 			const value = get(record, key1)
 			if (value === undefined) return record
-			// TODO fix any?
 			return set(record, key1)(callback(value))
 		} else if (key3 === undefined) {
 			const value = get(record, key1, key2)
