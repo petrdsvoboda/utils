@@ -1,54 +1,7 @@
-import { Map, update, get, set, toArray, merge, map, reduce } from './record'
-import { sort } from './array'
+import * as Record from './record'
 
-let a: Record<'1' | '2' | '3', { test: string; another: number }> = {
-	'1': { test: '111', another: 111 },
-	'2': { test: '222', another: 222 },
-	'3': { test: '333', another: 333 }
+interface Test {
+	foo?: { bar: number }
 }
-
-let c: Record<'1' | '4', { test: string; another: number }> = {
-	'1': { test: '11111', another: 222 },
-	'4': { test: '333', another: 333 }
-}
-
-console.log(get(a, '1', 'test'))
-
-console.log(a)
-a = set(a, '1', 'test')('xxx')
-console.log(a)
-a = update(a, '2')(x => ({
-	...x,
-	another: 333
-}))
-a = update(a, '3', 'another')(x => x + 1)
-console.log(a)
-
-let b = toArray(a)
-console.log('')
-console.log(b)
-console.log('')
-b = sort(b, {}, 'another')
-console.log(b)
-console.log('')
-b = sort(b, { ascending: false }, 'another')
-console.log(b)
-console.log('')
-b = sort(b, { ascending: true }, 'test')
-console.log(b)
-
-console.log(a)
-console.log(c)
-const d = merge(a, c)
-console.log(d)
-
-console.log(a)
-const e = map(a, curr => ({
-	...curr,
-	another: curr.another + 1
-}))
-console.log(e)
-
-console.log(a)
-const f = reduce(a, (acc, curr) => acc + curr.another, 0)
-console.log(f)
+const input: Test = { foo: { bar: 1 } }
+Record.update(input, 'foo', 'bar')(v => v + 1)

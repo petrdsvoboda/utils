@@ -26,6 +26,14 @@ describe('get', () => {
 	test('it should handle undefined', () => {
 		expect(Record.get(undefined, '1')).toEqual(undefined)
 	})
+
+	test('it should handle possible undefined branches', () => {
+		interface TestO {
+			a?: { [key: string]: string }
+		}
+		const input: TestO = { a: { b: '1' } }
+		expect(Record.get(input, 'a', 'b')).toEqual('1')
+	})
 })
 
 describe('set', () => {
@@ -61,6 +69,15 @@ describe('set', () => {
 
 	test('it should handle undefined', () => {
 		expect(Record.set(undefined, '1')(1)).toEqual(undefined)
+	})
+
+	test('it should handle possible undefined branches', () => {
+		interface TestO {
+			a?: { [key: string]: string }
+		}
+		const input: TestO = { a: { b: '1' } }
+		const output: TestO = { a: { b: '2' } }
+		expect(Record.set(input, 'a', 'b')('2')).toEqual(output)
 	})
 })
 
@@ -124,6 +141,16 @@ describe('update', () => {
 		expect(Record.update(c, '1', '2', '3')(v => v)).toEqual(c)
 		expect(Record.update(d, '1', '2', '3', '4')(v => v)).toEqual(d)
 		expect(Record.update(e, '1', '2', '3', '4', '5')(v => v)).toEqual(e)
+	})
+
+	test('it should handle possible undefined branches', () => {
+		interface TestO {
+			a?: { [key: string]: number }
+		}
+		const input: TestO = { a: { a: 1 } }
+		expect(Record.update(input, 'a', 'b')(value => value + 1)).toEqual(
+			input
+		)
 	})
 })
 
