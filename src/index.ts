@@ -1,7 +1,9 @@
-import * as Record from './record'
+import * as Array_ from './array'
+import * as Base_ from './base'
+import * as Date_ from './date'
+import * as Number_ from './number'
+import * as Record_ from './record'
+import * as String_ from './string'
+import * as Types_ from './types'
 
-interface Test {
-	foo?: { bar: number }
-}
-const input: Test = { foo: { bar: 1 } }
-Record.update(input, 'foo', 'bar')(v => v + 1)
+export { Array_, Base_, Date_, Number_, Record_, String_, Types_ }

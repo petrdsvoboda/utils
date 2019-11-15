@@ -56,7 +56,20 @@ export function get<
 	K3 extends keyof NonNullable<T[K1][K2]>,
 	K4 extends keyof NonNullable<T[K1][K2][K3]>,
 	K5 extends keyof NonNullable<T[K1][K2][K3][K4]>
->(record: T | undefined, key1: K1, key2?: K2, key3?: K3, key4?: K4, key5?: K5) {
+>(
+	record: T | undefined,
+	key1: K1,
+	key2?: K2,
+	key3?: K3,
+	key4?: K4,
+	key5?: K5
+):
+	| T[K1]
+	| T[K1][K2]
+	| T[K1][K2][K3]
+	| T[K1][K2][K3][K4]
+	| T[K1][K2][K3][K4][K5]
+	| undefined {
 	if (record === undefined) return undefined
 
 	const value = record[key1]
@@ -144,7 +157,7 @@ export function set<
 			| T[K1][K2][K3]
 			| T[K1][K2][K3][K4]
 			| T[K1][K2][K3][K4][K5]
-	) => {
+	): T | undefined => {
 		if (record === undefined) return record
 
 		if (key2 === undefined) {
@@ -283,7 +296,7 @@ export function update<
 				>
 		  >
 ) => T | undefined {
-	return callback => {
+	return (callback): T | undefined => {
 		if (record === undefined) return record
 
 		if (key2 === undefined) {
@@ -332,7 +345,7 @@ export function merge<
 export function merge<
 	T extends Record<string, any>,
 	U extends Record<string, any>
->(left: T | undefined, right: U | undefined) {
+>(left: T | undefined, right: U | undefined): T | U | T & U | undefined {
 	if (left === undefined && right === undefined) return undefined
 	if (left === undefined) return right
 	if (right === undefined) return left
@@ -375,7 +388,7 @@ export function map<T, U>(
 export function map<T, U>(
 	record: Record<string, T>,
 	callback: (value: T) => T | U
-) {
+): Record<string, T | U> {
 	return Object.keys(record).reduce<Record<string, T | U>>(
 		(acc, curr) => ({
 			...acc,
