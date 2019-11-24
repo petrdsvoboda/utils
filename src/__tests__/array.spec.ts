@@ -1,11 +1,94 @@
-import { sort, merge } from '../array'
+import * as Arr from '../array'
+
+describe('get', () => {
+	test('it handles basic get', () => {
+		const input = [1, 2]
+
+		expect(Arr.get(1)(input)).toEqual(2)
+	})
+
+	test('it handles undefined array', () => {
+		const input = undefined
+		expect(Arr.get(2)(input)).toEqual(undefined)
+		expect(Arr.get(2, 3)(input)).toEqual(undefined)
+	})
+
+	test('it handles undefined index', () => {
+		const input = [1, 2]
+
+		expect(Arr.get(2)(input)).toEqual(undefined)
+	})
+
+	test('it handles deep get', () => {
+		const input = [[1, 2], [2]]
+
+		expect(Arr.get(0, 1)(input)).toEqual(2)
+	})
+})
+
+describe('set', () => {
+	test('it handles basic set', () => {
+		const input = [1, 2]
+
+		expect(Arr.set(1)(3)(input)).toEqual([1, 3])
+		expect(Arr.set(2)(3)(input)).toEqual([1, 2, 3])
+	})
+
+	test('it handles undefined array', () => {
+		const input = undefined
+		expect(Arr.set(2)(3)(input)).toEqual(undefined)
+		expect(Arr.set(2, 3)(3)(input)).toEqual(undefined)
+	})
+
+	test('it handles undefined index', () => {
+		const input = [[1, 2], undefined]
+		expect(Arr.set(1, 3)(3)(input as any)).toEqual([[1, 2], []])
+	})
+
+	test('it handles deep set', () => {
+		const input = [[1, 2], [2]]
+
+		expect(Arr.set(0, 1)(3)(input)).toEqual([[1, 3], [2]])
+	})
+})
+
+describe('update', () => {
+	test('it handles basic update', () => {
+		const input = [1, 2]
+
+		expect(Arr.update(1)(v => v + 1)(input)).toEqual([1, 3])
+	})
+
+	test('it handles undefined array', () => {
+		const input = undefined
+		expect(Arr.update(2)(v => v + 1)(input)).toEqual(undefined)
+		expect(Arr.update(2, 3)(v => v + 1)(input)).toEqual(undefined)
+	})
+
+	test('it handles undefined index', () => {
+		const input = [1, 2]
+		expect(Arr.update(2)(v => v + 1)(input)).toEqual([1, 2])
+
+		const input2 = [[1, 2], undefined]
+		expect(Arr.update(1, 3)(v => v + 1)(input2 as any)).toEqual([
+			[1, 2],
+			[]
+		])
+	})
+
+	test('it handles deep update', () => {
+		const input = [[1, 2], [2]]
+
+		expect(Arr.update(0, 1)(v => v + 1)(input)).toEqual([[1, 3], [2]])
+	})
+})
 
 describe('sort', () => {
 	test('it should perform sort', () => {
 		const input = [{ a: 2 }, { a: 1 }]
 		const output = [{ a: 1 }, { a: 2 }]
 
-		expect(sort(input, {}, 'a')).toEqual(output)
+		expect(Arr.sort(input, {}, 'a')).toEqual(output)
 	})
 
 	test('it should perform sort on 5 object levels', () => {
@@ -36,18 +119,18 @@ describe('sort', () => {
 			{ a: { b: { c: { d: { e: 2 } } } } }
 		]
 
-		expect(sort(input1, {}, 'a')).toEqual(output1)
-		expect(sort(input2, {}, 'a', 'b')).toEqual(output2)
-		expect(sort(input3, {}, 'a', 'b', 'c')).toEqual(output3)
-		expect(sort(input4, {}, 'a', 'b', 'c', 'd')).toEqual(output4)
-		expect(sort(input5, {}, 'a', 'b', 'c', 'd', 'e')).toEqual(output5)
+		expect(Arr.sort(input1, {}, 'a')).toEqual(output1)
+		expect(Arr.sort(input2, {}, 'a', 'b')).toEqual(output2)
+		expect(Arr.sort(input3, {}, 'a', 'b', 'c')).toEqual(output3)
+		expect(Arr.sort(input4, {}, 'a', 'b', 'c', 'd')).toEqual(output4)
+		expect(Arr.sort(input5, {}, 'a', 'b', 'c', 'd', 'e')).toEqual(output5)
 	})
 
 	test('it should perform sort with strings', () => {
 		const input = [{ a: 'b' }, { a: 'a' }]
 		const output = [{ a: 'a' }, { a: 'b' }]
 
-		expect(sort(input, {}, 'a')).toEqual(output)
+		expect(Arr.sort(input, {}, 'a')).toEqual(output)
 	})
 
 	test('it should perform sort with dates', () => {
@@ -57,21 +140,21 @@ describe('sort', () => {
 		const input = [{ a: date2 }, { a: date1 }]
 		const output = [{ a: date1 }, { a: date2 }]
 
-		expect(sort(input, { isDate: true }, 'a')).toEqual(output)
+		expect(Arr.sort(input, { isDate: true }, 'a')).toEqual(output)
 	})
 
 	test('it should perform descending sort', () => {
 		const input = [{ a: 2 }, { a: 1 }]
 		const output = [{ a: 2 }, { a: 1 }]
 
-		expect(sort(input, { ascending: false }, 'a')).toEqual(output)
+		expect(Arr.sort(input, { ascending: false }, 'a')).toEqual(output)
 	})
 
 	test('it should handle undefined values', () => {
 		const input = [{ a: undefined }, { a: 1 }]
 		const output = [{ a: 1 }, { a: undefined }]
 
-		expect(sort(input, {}, 'a')).toEqual(output)
+		expect(Arr.sort(input, {}, 'a')).toEqual(output)
 	})
 
 	test('it should handle nested undefined values', () => {
@@ -97,8 +180,8 @@ describe('sort', () => {
 			{ a: { b: undefined } }
 		]
 
-		expect(sort(input, {}, 'a', 'b')).toEqual(output)
-		expect(sort(input2, {}, 'a', 'b', 'c')).toEqual(output2)
+		expect(Arr.sort(input, {}, 'a', 'b')).toEqual(output)
+		expect(Arr.sort(input2, {}, 'a', 'b', 'c')).toEqual(output2)
 	})
 })
 
@@ -108,7 +191,7 @@ describe('merge', () => {
 		const input2 = [1, 2, 1]
 		const output = [1, 2, 1, 1, 2, 1]
 
-		expect(merge(input1, input2)).toEqual(output)
+		expect(Arr.merge(input1, input2)).toEqual(output)
 	})
 
 	test('it should merge arrays, keeping only unique values', () => {
@@ -116,6 +199,6 @@ describe('merge', () => {
 		const input2 = [1, 2, 1, 3]
 		const output = [1, 2, 4, 3]
 
-		expect(merge(input1, input2, { unique: true })).toEqual(output)
+		expect(Arr.merge(input1, input2, { unique: true })).toEqual(output)
 	})
 })
