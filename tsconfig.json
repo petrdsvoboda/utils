@@ -1,16 +1,18 @@
 {
 	"compilerOptions": {
-		"target": "es5",
+		"target": "es6",
 		"module": "commonjs",
 		"lib": [
-			"es2017",
-			"es7",
-			"es6",
+			"esnext",
 			"dom"
 		],
-		"declaration": true,
+		"rootDir": "src",
 		"outDir": "lib",
+		"declaration": true,
 		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"strictNullChecks": true,
 		"removeComments": true,
 		"preserveConstEnums": true,
 		"sourceMap": true,
@@ -18,7 +20,7 @@
 	},
 	"exclude": [
 		"node_modules",
-		"dist",
+		"lib",
 		"**/__tests__"
 	]
 }

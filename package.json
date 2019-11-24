@@ -1,10 +1,13 @@
 {
-	"name": "utils",
-	"version": "1.0.0",
-	"main": "src/index.ts",
+	"name": "@petrdorg/utils",
+	"version": "0.3.0",
+	"main": "dist/index.js",
 	"repository": "git@github.com:petrdsvoboda/utils.git",
 	"author": "Petr D. Svoboda <petrdsvoboda@gmail.com>",
 	"license": "MIT",
+	"files": [
+		"lib/**/*"
+	],
 	"scripts": {
 		"start": "ts-node-dev src/index.ts",
 		"test": "jest",
@@ -13,16 +16,16 @@
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@types/jest": "^24.0.19",
-		"@typescript-eslint/eslint-plugin": "^2.5.0",
-		"@typescript-eslint/parser": "^2.5.0",
-		"eslint": "^6.5.1",
-		"eslint-config-prettier": "^6.4.0",
+		"@types/jest": "^24.0.23",
+		"@typescript-eslint/eslint-plugin": "^2.8.0",
+		"@typescript-eslint/parser": "^2.8.0",
+		"eslint": "^6.7.0",
+		"eslint-config-prettier": "^6.7.0",
 		"eslint-plugin-prettier": "^3.1.1",
 		"jest": "^24.9.0",
-		"prettier": "^1.18.2",
-		"ts-jest": "^24.1.0",
-		"ts-node-dev": "^1.0.0-pre.43",
-		"typescript": "^3.7.1-rc"
+		"prettier": "^1.19.1",
+		"ts-jest": "^24.2.0",
+		"ts-node-dev": "^1.0.0-pre.44",
+		"typescript": "^3.7.2"
 	}
 }
