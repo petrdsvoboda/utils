@@ -1,8 +1,28 @@
 import { compare as compareDate } from './date'
 import { compare as compareNumber } from './number'
-import { Map, get } from './record'
+import * as R from './record'
 import { compare as compareString } from './string'
 import { CompareResult } from './types'
+
+export function get<T extends any>(index: number) {
+	return (array: T[]) => array[index]
+}
+
+export function set<T extends any>(index: number) {
+	return (value: T) => (array: T[]) => {
+		const newArr = array.slice()
+		newArr[index] = value
+		return newArr
+	}
+}
+
+export function update<T extends any>(index: number) {
+	return (callback: (value: T) => T) => (array: T[]) => {
+		const newArr = array.slice()
+		newArr[index] = callback(newArr[index])
+		return newArr
+	}
+}
 
 type CompareOptions = {
 	ascending?: boolean
@@ -36,24 +56,24 @@ const compareFn = (a: any, b: any, options?: CompareOptions): CompareResult => {
 	return result
 }
 
-export function sort<T extends Map<any>, K1 extends keyof T>(
+export function sort<T extends Record<string, any>, K1 extends keyof T>(
 	array: T[],
 	options: CompareOptions,
 	key1: K1
 ): T[]
 export function sort<
-	T extends Map<any>,
+	T extends Record<string, any>,
 	K1 extends keyof T,
 	K2 extends keyof NonNullable<T[K1]>
 >(array: T[], options: CompareOptions, key1: K1, key2: K2): T[]
 export function sort<
-	T extends Map<any>,
+	T extends Record<string, any>,
 	K1 extends keyof T,
 	K2 extends keyof NonNullable<T[K1]>,
 	K3 extends keyof NonNullable<NonNullable<T[K1]>[K2]>
 >(array: T[], options: CompareOptions, key1: K1, key2: K2, key3: K3): T[]
 export function sort<
-	T extends Map<any>,
+	T extends Record<string, any>,
 	K1 extends keyof T,
 	K2 extends keyof NonNullable<T[K1]>,
 	K3 extends keyof NonNullable<T[K1][K2]>,
@@ -67,7 +87,7 @@ export function sort<
 	key4: K4
 ): T[]
 export function sort<
-	T extends Map<any>,
+	T extends Record<string, any>,
 	K1 extends keyof T,
 	K2 extends keyof NonNullable<T[K1]>,
 	K3 extends keyof NonNullable<T[K1][K2]>,
@@ -83,7 +103,7 @@ export function sort<
 	key5: K5
 ): T[]
 export function sort<
-	T extends Map<any>,
+	T extends Record<string, any>,
 	K1 extends keyof T,
 	K2 extends keyof T[K1],
 	K3 extends keyof T[K1][K2],
@@ -103,20 +123,20 @@ export function sort<
 		let bVal: any
 
 		if (key2 === undefined) {
-			aVal = get(a, key1)
-			bVal = get(b, key1)
+			aVal = R.get(a, key1)
+			bVal = R.get(b, key1)
 		} else if (key3 === undefined) {
-			aVal = get(a, key1, key2)
-			bVal = get(b, key1, key2)
+			aVal = R.get(a, key1, key2)
+			bVal = R.get(b, key1, key2)
 		} else if (key4 === undefined) {
-			aVal = get(a, key1, key2, key3)
-			bVal = get(b, key1, key2, key3)
+			aVal = R.get(a, key1, key2, key3)
+			bVal = R.get(b, key1, key2, key3)
 		} else if (key5 === undefined) {
-			aVal = get(a, key1, key2, key3, key4)
-			bVal = get(b, key1, key2, key3, key4)
+			aVal = R.get(a, key1, key2, key3, key4)
+			bVal = R.get(b, key1, key2, key3, key4)
 		} else {
-			aVal = get(a, key1, key2, key3, key4, key5)
-			bVal = get(b, key1, key2, key3, key4, key5)
+			aVal = R.get(a, key1, key2, key3, key4, key5)
+			bVal = R.get(b, key1, key2, key3, key4, key5)
 		}
 
 		return compareFn(aVal, bVal, options)
