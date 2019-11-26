@@ -178,12 +178,9 @@ export function set<
 		} else if (key5 === undefined) {
 			return {
 				...record,
-				[key1]: set<T[K1], K2, K3, K4>(
-					record[key1],
-					key2,
-					key3,
-					key4
-				)(value)
+				[key1]: set<T[K1], K2, K3, K4>(record[key1], key2, key3, key4)(
+					value
+				)
 			}
 		} else {
 			return {
@@ -403,11 +400,11 @@ export function map<T, U>(
 
 export function reduce<T, U>(
 	record: Record<string, T>,
-	callback: (acc: U, curr: T, index: number) => U,
+	callback: (acc: U, curr: T, index: string) => U,
 	initialValue: U
 ): U {
 	return Object.keys(record).reduce<U>(
-		(acc, curr, index) => callback(acc, record[curr], index),
+		(acc, curr) => callback(acc, record[curr], curr),
 		initialValue
 	)
 }
