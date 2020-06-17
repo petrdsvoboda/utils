@@ -183,6 +183,40 @@ describe('sort', () => {
 		expect(Arr.sort(input, {}, 'a', 'b')).toEqual(output)
 		expect(Arr.sort(input2, {}, 'a', 'b', 'c')).toEqual(output2)
 	})
+
+	test('it should handle null values', () => {
+		const input = [{ a: null }, { a: 1 }]
+		const output = [{ a: 1 }, { a: null }]
+
+		expect(Arr.sort(input, {}, 'a')).toEqual(output)
+	})
+
+	test('it should handle nested null values', () => {
+		type Values = {
+			a?: { b: number  } | null
+		}
+		const input: Values[] = [{ a: null }, { a: { b: 1 } }]
+		const output: Values[] = [{ a: { b: 1 } }, { a: null }]
+
+		type Values2 = {
+			a?: { b?: { c: number } | null } | null
+		}
+		const input2: Values2[] = [
+			{ a: null },
+			{ a: { b: { c: 2 } } },
+			{ a: { b: null } },
+			{ a: { b: { c: 1 } } }
+		]
+		const output2: Values2[] = [
+			{ a: { b: { c: 1 } } },
+			{ a: { b: { c: 2 } } },
+			{ a: null },
+			{ a: { b: null } }
+		]
+
+		expect(Arr.sort(input, {}, 'a', 'b')).toEqual(output)
+		expect(Arr.sort(input2, {}, 'a', 'b', 'c')).toEqual(output2)
+	})
 })
 
 describe('merge', () => {

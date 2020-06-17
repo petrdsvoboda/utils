@@ -3,6 +3,7 @@ import { compare as compareNumber } from './number'
 import * as Record from './record'
 import { compare as compareString } from './string'
 import { CompareResult } from './types'
+import { nil } from './base'
 
 type ArrayGetFn<T, U> = (array?: U) => T | undefined
 export function get<T extends any>(index1: number): ArrayGetFn<T, T[]>
@@ -94,9 +95,9 @@ type CompareOptions = {
 }
 
 const compareFn = (a: any, b: any, options?: CompareOptions): CompareResult => {
-	if (a === undefined || b === undefined) {
-		if (a === undefined && b === undefined) return 0
-		else if (a === undefined) return 1
+	if (nil(a) || nil(b)) {
+		if (nil(a) && nil(b)) return 0
+		else if (nil(a)) return 1
 		else return -1
 	}
 

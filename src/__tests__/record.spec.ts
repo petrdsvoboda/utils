@@ -27,6 +27,10 @@ describe('get', () => {
 		expect(Record.get(undefined, '1')).toEqual(undefined)
 	})
 
+	test('it should handle null', () => {
+		expect(Record.get(null as any, '1')).toEqual(undefined)
+	})
+
 	test('it should handle possible undefined branches', () => {
 		interface TestO {
 			a?: { [key: string]: string }
@@ -69,6 +73,10 @@ describe('set', () => {
 
 	test('it should handle undefined', () => {
 		expect(Record.set(undefined, '1')(1)).toEqual(undefined)
+	})
+
+	test('it should handle null', () => {
+		expect(Record.set(null as any, '1')(1)).toEqual(undefined)
 	})
 
 	test('it should handle possible undefined branches', () => {
@@ -136,6 +144,21 @@ describe('update', () => {
 		const e = { '1': { '2': { '3': { '4': { '5': undefined } } } } }
 
 		expect(Record.update(undefined, '1')(v => v)).toEqual(undefined)
+		expect(Record.update(a, '1')(v => v)).toEqual(a)
+		expect(Record.update(b, '1', '2')(v => v)).toEqual(b)
+		expect(Record.update(c, '1', '2', '3')(v => v)).toEqual(c)
+		expect(Record.update(d, '1', '2', '3', '4')(v => v)).toEqual(d)
+		expect(Record.update(e, '1', '2', '3', '4', '5')(v => v)).toEqual(e)
+	})
+
+	test('it should handle null', () => {
+		const a = { '1': null as any }
+		const b = { '1': { '2': null as any } }
+		const c = { '1': { '2': { '3': null as any } } }
+		const d = { '1': { '2': { '3': { '4': null as any } } } }
+		const e = { '1': { '2': { '3': { '4': { '5': null as any } } } } }
+
+		expect(Record.update(null as any, '1')(v => v)).toEqual(undefined)
 		expect(Record.update(a, '1')(v => v)).toEqual(a)
 		expect(Record.update(b, '1', '2')(v => v)).toEqual(b)
 		expect(Record.update(c, '1', '2', '3')(v => v)).toEqual(c)

@@ -1,5 +1,5 @@
 import { merge as mergeArray } from './array'
-import { notNil } from './base'
+import { notNil, nil } from './base'
 
 export function get<T extends Record<string, any>, K1 extends keyof T>(
 	record: T | undefined,
@@ -70,7 +70,7 @@ export function get<
 	| T[K1][K2][K3][K4]
 	| T[K1][K2][K3][K4][K5]
 	| undefined {
-	if (record === undefined) return undefined
+	if (nil(record)) return undefined
 
 	const value = record[key1]
 	if (key2 === undefined) return value
@@ -158,7 +158,7 @@ export function set<
 			| T[K1][K2][K3][K4]
 			| T[K1][K2][K3][K4][K5]
 	): T | undefined => {
-		if (record === undefined) return record
+		if (nil(record)) return undefined
 
 		if (key2 === undefined) {
 			return {
@@ -297,7 +297,7 @@ export function update<
 		  >
 ) => T | undefined {
 	return (callback): T | undefined => {
-		if (record === undefined) return record
+		if (nil(record)) return undefined
 
 		if (key2 === undefined) {
 			const value = get(record, key1)
