@@ -17,19 +17,16 @@ type CompareObject<TSchema extends CompareSchema> = {
 		| Array<CompareObject<any> & { id: string | number }>
 }
 
+type ResultObject<T extends CompareSchemaObject> = Result<Omit<T, '_type'>>
+type ResultArray<T extends CompareSchemaObject> = Array<
+	T & { id: string | number; _type: 'added' | 'changed' | 'deleted' }
+>
 export type Result<TSchema extends CompareSchema> = {
 	[K in keyof TSchema]?: TSchema[K] extends null
 		? Change
 		: NonNullable<TSchema[K]>['_type'] extends 'object'
-		? Result<NonNullable<Omit<TSchema[K], '_type'>>>
-		: Array<
-				NonNullable<
-					TSchema[K] & {
-						id: string | number
-						_type: 'added' | 'changed' | 'deleted'
-					}
-				>
-		  >
+		? ResultObject<NonNullable<TSchema[K]>>
+		: ResultArray<NonNullable<TSchema[K]>>
 }
 
 const parseVal = (val: any): string | number | undefined => {
@@ -64,7 +61,7 @@ export const compare = <TSchema extends CompareSchema>(
 
 		let prevVal = prev[key]
 		let currVal = curr[key]
-		let change: Change | undefined
+		let change: Change | ResultObject<NonNullable<typeof value>> | undefined
 		if (value === null) {
 			const prevVal = parseVal(prev[key])
 			const currVal = parseVal(curr[key])
@@ -88,6 +85,9 @@ export const compare = <TSchema extends CompareSchema>(
 			if (value._type === 'object') {
 				change = compare(bareValue, prevVal, currVal)
 			} else {
+				if (!Array.isArray(prevVal) || !Array.isArray(currVal))
+					return changes
+
 				change = compare(bareValue, prevVal, currVal)
 			}
 		}
