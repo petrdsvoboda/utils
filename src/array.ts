@@ -1,9 +1,9 @@
+import { nil } from './base'
 import { compare as compareDate } from './date'
 import { compare as compareNumber } from './number'
 import * as Record from './record'
 import { compare as compareString } from './string'
 import { CompareResult } from './types'
-import { nil } from './base'
 
 type ArrayGetFn<T, U> = (array?: U) => T | undefined
 export function get<T extends any>(index1: number): ArrayGetFn<T, T[]>
@@ -208,8 +208,27 @@ export function sort<
 	})
 }
 
+export const union = (left: any[], right: any[]) => {
+	const arr = left.reduce<any[]>(
+		(acc, curr) => (acc.includes(curr) ? acc : [...acc, curr]),
+		[]
+	)
+	return right.reduce<any[]>(
+		(acc, curr) => (acc.includes(curr) ? acc : [...acc, curr]),
+		arr
+	)
+}
+
+export const intersection = (left: any[], right: any[]) => {
+	return left.reduce<any[]>(
+		(acc, curr) => (right.includes(curr) ? acc : [...acc, curr]),
+		[]
+	)
+}
+
 type MergeOptions = {
 	unique?: boolean
+	common?: boolean
 }
 export function merge(
 	left: any[],
@@ -217,14 +236,9 @@ export function merge(
 	options?: MergeOptions
 ): any[] {
 	if (options && options.unique) {
-		const arr = left.reduce<any[]>(
-			(acc, curr) => (acc.includes(curr) ? acc : [...acc, curr]),
-			[]
-		)
-		return right.reduce<any[]>(
-			(acc, curr) => (acc.includes(curr) ? acc : [...acc, curr]),
-			arr
-		)
+		return union(left, right)
+	} else if (options && options.common) {
+		return intersection(left, right)
 	} else {
 		return [...left, ...right]
 	}
