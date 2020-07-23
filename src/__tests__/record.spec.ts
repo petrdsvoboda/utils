@@ -108,25 +108,43 @@ describe('update', () => {
 		const output = { 1: { '2': { '3': { '4': { '5': 7 } } } } }
 
 		expect(
-			Record.update(lvl1, '1')(v => ({
+			Record.update(
+				lvl1,
+				'1'
+			)(v => ({
 				...v,
 				'2': { '3': { '4': { '5': v[2][3][4][5] + 1 } } }
 			}))
 		).toEqual(output)
 		expect(
-			Record.update(lvl1, '1', '2')(v => ({
+			Record.update(
+				lvl1,
+				'1',
+				'2'
+			)(v => ({
 				...v,
 				'3': { '4': { '5': v[3][4][5] + 1 } }
 			}))
 		).toEqual(output)
 		expect(
-			Record.update(lvl1, '1', '2', '3')(v => ({
+			Record.update(
+				lvl1,
+				'1',
+				'2',
+				'3'
+			)(v => ({
 				...v,
 				'4': { '5': v[4][5] + 1 }
 			}))
 		).toEqual(output)
 		expect(
-			Record.update(lvl1, '1', '2', '3', '4')(v => ({
+			Record.update(
+				lvl1,
+				'1',
+				'2',
+				'3',
+				'4'
+			)(v => ({
 				...v,
 				'5': v[5] + 1
 			}))

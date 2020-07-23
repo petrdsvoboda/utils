@@ -5,90 +5,6 @@ import * as Record from './record'
 import { compare as compareString } from './string'
 import { CompareResult } from './types'
 
-type ArrayGetFn<T, U> = (array?: U) => T | undefined
-export function get<T extends any>(index1: number): ArrayGetFn<T, T[]>
-export function get<T extends any>(
-	index1: number,
-	index2: number
-): ArrayGetFn<T, T[][]>
-export function get<T extends any>(
-	index1: number,
-	index2?: number
-): ArrayGetFn<T, T[]> | ArrayGetFn<T, T[][]> {
-	if (index2 === undefined) {
-		return (array?: T[]): undefined | T =>
-			array === undefined ? undefined : array[index1]
-	} else {
-		return (array?: T[][]): undefined | T =>
-			array === undefined ? undefined : get(index2)(array[index1])
-	}
-}
-
-type ArraySetFn<T, U> = (value: T) => (array?: U) => U | undefined
-export function set<T extends any>(index1: number): ArraySetFn<T, T[]>
-export function set<T extends any>(
-	index1: number,
-	index2: number
-): ArraySetFn<T, T[][]>
-export function set<T extends any>(
-	index1: number,
-	index2?: number
-): ArraySetFn<T, T[]> | ArraySetFn<T, T[][]> {
-	if (index2 === undefined) {
-		return (value: T) => (array?: T[]): undefined | T[] => {
-			if (array === undefined) return undefined
-			return [
-				...array.slice(0, index1),
-				value,
-				...array.slice(index1 + 1)
-			]
-		}
-	} else {
-		return (value: T) => (array?: T[][]): undefined | T[][] => {
-			if (array === undefined) return undefined
-			return [
-				...array.slice(0, index1),
-				set(index2)(value)(array[index1]) || [],
-				...array.slice(index1 + 1)
-			]
-		}
-	}
-}
-
-type UpdateFn<T> = (value: T) => T
-type ArrayUpdateFn<T, U> = (
-	callback: UpdateFn<T>
-) => (array?: U) => U | undefined
-export function update<T extends any>(index1: number): ArrayUpdateFn<T, T[]>
-export function update<T extends any>(
-	index1: number,
-	index2: number
-): ArrayUpdateFn<T, T[][]>
-export function update<T extends any>(
-	index1: number,
-	index2?: number
-): ArrayUpdateFn<T, T[]> | ArrayUpdateFn<T, T[][]> {
-	if (index2 === undefined) {
-		return (callback: UpdateFn<T>) => (array?: T[]): undefined | T[] => {
-			if (array === undefined) return undefined
-			const value = get(index1)(array)
-			if (!value) return array
-			return set(index1)(callback(value))(array)
-		}
-	} else {
-		return (callback: UpdateFn<T>) => (
-			array?: T[][]
-		): undefined | T[][] => {
-			if (array === undefined) return undefined
-			return [
-				...array.slice(0, index1),
-				update(index2)(callback)(array[index1]) || [],
-				...array.slice(index1 + 1)
-			]
-		}
-	}
-}
-
 type CompareOptions = {
 	ascending?: boolean
 	isDate?: boolean
@@ -208,7 +124,7 @@ export function sort<
 	})
 }
 
-export const union = (left: any[], right: any[]) => {
+export const union = (left: any[], right: any[]): any[] => {
 	const arr = left.reduce<any[]>(
 		(acc, curr) => (acc.includes(curr) ? acc : [...acc, curr]),
 		[]
@@ -219,7 +135,7 @@ export const union = (left: any[], right: any[]) => {
 	)
 }
 
-export const intersection = (left: any[], right: any[]) => {
+export const intersection = (left: any[], right: any[]): any[] => {
 	return left.reduce<any[]>(
 		(acc, curr) => (right.includes(curr) ? acc : [...acc, curr]),
 		[]

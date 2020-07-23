@@ -1,88 +1,5 @@
 import * as Arr from '../array'
 
-describe('get', () => {
-	test('it handles basic get', () => {
-		const input = [1, 2]
-
-		expect(Arr.get(1)(input)).toEqual(2)
-	})
-
-	test('it handles undefined array', () => {
-		const input = undefined
-		expect(Arr.get(2)(input)).toEqual(undefined)
-		expect(Arr.get(2, 3)(input)).toEqual(undefined)
-	})
-
-	test('it handles undefined index', () => {
-		const input = [1, 2]
-
-		expect(Arr.get(2)(input)).toEqual(undefined)
-	})
-
-	test('it handles deep get', () => {
-		const input = [[1, 2], [2]]
-
-		expect(Arr.get(0, 1)(input)).toEqual(2)
-	})
-})
-
-describe('set', () => {
-	test('it handles basic set', () => {
-		const input = [1, 2]
-
-		expect(Arr.set(1)(3)(input)).toEqual([1, 3])
-		expect(Arr.set(2)(3)(input)).toEqual([1, 2, 3])
-	})
-
-	test('it handles undefined array', () => {
-		const input = undefined
-		expect(Arr.set(2)(3)(input)).toEqual(undefined)
-		expect(Arr.set(2, 3)(3)(input)).toEqual(undefined)
-	})
-
-	test('it handles undefined index', () => {
-		const input = [[1, 2], undefined]
-		expect(Arr.set(1, 3)(3)(input as any)).toEqual([[1, 2], []])
-	})
-
-	test('it handles deep set', () => {
-		const input = [[1, 2], [2]]
-
-		expect(Arr.set(0, 1)(3)(input)).toEqual([[1, 3], [2]])
-	})
-})
-
-describe('update', () => {
-	test('it handles basic update', () => {
-		const input = [1, 2]
-
-		expect(Arr.update(1)(v => v + 1)(input)).toEqual([1, 3])
-	})
-
-	test('it handles undefined array', () => {
-		const input = undefined
-		expect(Arr.update(2)(v => v + 1)(input)).toEqual(undefined)
-		expect(Arr.update(2, 3)(v => v + 1)(input)).toEqual(undefined)
-	})
-
-	test('it handles undefined index', () => {
-		const input = [1, 2]
-		expect(Arr.update(2)(v => v + 1)(input)).toEqual([1, 2])
-
-		const input2 = [[1, 2], undefined]
-		expect(Arr.update(1, 3)(v => v + 1)(input2 as any)).toEqual([
-			[1, 2],
-			[]
-		])
-	})
-
-	test('it handles deep update', () => {
-		const input = [[1, 2], [2]]
-
-		expect(Arr.update(0, 1)(v => v + 1)(input)).toEqual([[1, 3], [2]])
-	})
-})
-
 describe('sort', () => {
 	test('it should perform sort', () => {
 		const input = [{ a: 2 }, { a: 1 }]
@@ -193,7 +110,7 @@ describe('sort', () => {
 
 	test('it should handle nested null values', () => {
 		type Values = {
-			a?: { b: number  } | null
+			a?: { b: number } | null
 		}
 		const input: Values[] = [{ a: null }, { a: { b: 1 } }]
 		const output: Values[] = [{ a: { b: 1 } }, { a: null }]

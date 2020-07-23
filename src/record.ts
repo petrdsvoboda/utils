@@ -1,5 +1,5 @@
 import { merge as mergeArray } from './array'
-import { notNil, nil } from './base'
+import { nil, notNil } from './base'
 
 export function get<T extends Record<string, any>, K1 extends keyof T>(
 	record: T | undefined,
@@ -178,9 +178,12 @@ export function set<
 		} else if (key5 === undefined) {
 			return {
 				...record,
-				[key1]: set<T[K1], K2, K3, K4>(record[key1], key2, key3, key4)(
-					value
-				)
+				[key1]: set<T[K1], K2, K3, K4>(
+					record[key1],
+					key2,
+					key3,
+					key4
+				)(value)
 			}
 		} else {
 			return {
