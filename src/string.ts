@@ -24,18 +24,38 @@ export const splitPath = (value: string): string[] =>
 					[]
 				)
 
+export const toString = (x: unknown): string | undefined => {
+	if (typeof x === 'string') return x
+	else if (typeof x === 'number') return x.toString()
+	else if (x instanceof Date) return x.toLocaleString('cs')
+	else return
+}
+
+export const normalize = (s: string): string =>
+	s
+		.toLowerCase()
+		.normalize('NFKD')
+		.replace(/[\u0300-\u036F]/g, '')
+
+export const search = (base: unknown, term: unknown): boolean => {
+	const baseString = toString(base)
+	const termString = toString(term)
+	if (!baseString || !termString) return false
+	return normalize(baseString).includes(normalize(termString))
+}
+
 export const includes = (
 	a: string | string[],
 	b: string | string[]
 ): boolean => {
 	if (nil(a) || nil(b)) return false
 	if (typeof a === 'string' && typeof b === 'string') {
-		return a === b
+		return normalize(a) === normalize(b)
 	} else if (typeof a === 'string') {
-		return b.includes(a)
+		return (b as string[]).map(normalize).includes(normalize(a))
 	} else if (typeof b === 'string') {
-		return a.includes(b)
+		return (a as string[]).map(normalize).includes(normalize(b))
 	} else {
-		return intersection(a, b).length > 0
+		return intersection(a.map(normalize), b.map(normalize)).length > 0
 	}
 }
