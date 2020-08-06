@@ -333,19 +333,19 @@ type MergeOptions = { preserveNil: boolean }
 export function merge<
 	T extends Record<string, any>,
 	U extends Record<string, any>
->(left: undefined, right: undefined): undefined
+>(left: undefined, right: undefined, options?: MergeOptions): undefined
 export function merge<
 	T extends Record<string, any>,
 	U extends Record<string, any>
->(left: T, right: undefined): T
+>(left: T, right: undefined, options?: MergeOptions): T
 export function merge<
 	T extends Record<string, any>,
 	U extends Record<string, any>
->(left: undefined, right: U): U
+>(left: undefined, right: U, options?: MergeOptions): U
 export function merge<
 	T extends Record<string, any>,
 	U extends Record<string, any>
->(left: T, right: U): T & U
+>(left: T, right: U, options?: MergeOptions): T & U
 export function merge<
 	T extends Record<string, any>,
 	U extends Record<string, any>
