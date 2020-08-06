@@ -329,6 +329,7 @@ export function update<
 export const toArray = <T extends any>(record: Record<string, T>): T[] =>
 	Object.values(record).filter(notNil)
 
+type MergeOptions = { preserveNil: boolean }
 export function merge<
 	T extends Record<string, any>,
 	U extends Record<string, any>
@@ -348,10 +349,27 @@ export function merge<
 export function merge<
 	T extends Record<string, any>,
 	U extends Record<string, any>
->(left: T | undefined, right: U | undefined): T | U | (T & U) | undefined {
+>(
+	left: T | undefined,
+	right: U | undefined,
+	options?: MergeOptions
+): T | U | (T & U) | undefined {
 	if (left === undefined && right === undefined) return undefined
 	if (left === undefined) return right
-	if (right === undefined) return left
+	if (right === undefined) {
+		if (options?.preserveNil) {
+			if (
+				['boolean', 'string', 'number'].includes(typeof left) ||
+				left instanceof Date
+			) {
+				return undefined
+			} else {
+				return left
+			}
+		} else {
+			return left
+		}
+	}
 
 	return Object.keys(right).reduce((acc, curr) => {
 		const leftVal: any = left[curr]
