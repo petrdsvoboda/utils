@@ -1,9 +1,12 @@
-import * as Array_ from './array'
-import * as Base_ from './base'
-import * as Date_ from './date'
-import * as Number_ from './number'
-import * as Record_ from './record'
-import * as String_ from './string'
-import * as Types_ from './types'
+export * as array from './array'
+export * as base from './base'
+export * as date from './date'
+export * as number from './number'
+export * as record from './record'
+export * as string from './string'
+export * as types from './types'
 
-export { Array_, Base_, Date_, Number_, Record_, String_, Types_ }
+import * as record from './record'
+
+const test = { a: { b: 3 } }
+record.set('s', 'c')(4)(test)

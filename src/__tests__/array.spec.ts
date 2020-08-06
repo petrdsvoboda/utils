@@ -1,11 +1,12 @@
-import * as Arr from '../array'
+import * as array from '../array'
+import * as record from '../record'
 
 describe('sort', () => {
 	test('it should perform sort', () => {
 		const input = [{ a: 2 }, { a: 1 }]
 		const output = [{ a: 1 }, { a: 2 }]
 
-		expect(Arr.sort(input, {}, 'a')).toEqual(output)
+		expect(array.sort('a')(input)).toEqual(output)
 	})
 
 	test('it should perform sort on 5 object levels', () => {
@@ -36,18 +37,26 @@ describe('sort', () => {
 			{ a: { b: { c: { d: { e: 2 } } } } }
 		]
 
-		expect(Arr.sort(input1, {}, 'a')).toEqual(output1)
-		expect(Arr.sort(input2, {}, 'a', 'b')).toEqual(output2)
-		expect(Arr.sort(input3, {}, 'a', 'b', 'c')).toEqual(output3)
-		expect(Arr.sort(input4, {}, 'a', 'b', 'c', 'd')).toEqual(output4)
-		expect(Arr.sort(input5, {}, 'a', 'b', 'c', 'd', 'e')).toEqual(output5)
+		expect(array.sort('a')(input1)).toEqual(output1)
+		expect(record.update('a')(arr => arr.sort('b'))(input2)).toEqual(
+			output2
+		)
+		expect(record.update('a', 'b')(arr => arr.sort('c'))(input3)).toEqual(
+			output3
+		)
+		expect(
+			record.update('a', 'b', 'c')(arr => arr.sort('d'))(input4)
+		).toEqual(output4)
+		expect(
+			record.update('a', 'b', 'c', 'd')(arr => arr.sort('e'))(input5)
+		).toEqual(output5)
 	})
 
 	test('it should perform sort with strings', () => {
 		const input = [{ a: 'b' }, { a: 'a' }]
 		const output = [{ a: 'a' }, { a: 'b' }]
 
-		expect(Arr.sort(input, {}, 'a')).toEqual(output)
+		expect(array.sort('a')(input)).toEqual(output)
 	})
 
 	test('it should perform sort with dates', () => {
@@ -57,21 +66,21 @@ describe('sort', () => {
 		const input = [{ a: date2 }, { a: date1 }]
 		const output = [{ a: date1 }, { a: date2 }]
 
-		expect(Arr.sort(input, { isDate: true }, 'a')).toEqual(output)
+		expect(array.sort('a', { isDate: true })(input)).toEqual(output)
 	})
 
 	test('it should perform descending sort', () => {
 		const input = [{ a: 2 }, { a: 1 }]
 		const output = [{ a: 2 }, { a: 1 }]
 
-		expect(Arr.sort(input, { ascending: false }, 'a')).toEqual(output)
+		expect(array.sort('a', { ascending: false })(input)).toEqual(output)
 	})
 
 	test('it should handle undefined values', () => {
 		const input = [{ a: undefined }, { a: 1 }]
 		const output = [{ a: 1 }, { a: undefined }]
 
-		expect(Arr.sort(input, {}, 'a')).toEqual(output)
+		expect(array.sort('a')(input)).toEqual(output)
 	})
 
 	test('it should handle nested undefined values', () => {
@@ -97,15 +106,17 @@ describe('sort', () => {
 			{ a: { b: undefined } }
 		]
 
-		expect(Arr.sort(input, {}, 'a', 'b')).toEqual(output)
-		expect(Arr.sort(input2, {}, 'a', 'b', 'c')).toEqual(output2)
+		expect(record.update('a')(arr => arr.sort('b'))(input)).toEqual(output)
+		expect(record.update('a', 'b')(arr => arr.sort('c'))(input2)).toEqual(
+			output2
+		)
 	})
 
 	test('it should handle null values', () => {
 		const input = [{ a: null }, { a: 1 }]
 		const output = [{ a: 1 }, { a: null }]
 
-		expect(Arr.sort(input, {}, 'a')).toEqual(output)
+		expect(array.sort('a')(input)).toEqual(output)
 	})
 
 	test('it should handle nested null values', () => {
@@ -131,8 +142,10 @@ describe('sort', () => {
 			{ a: { b: null } }
 		]
 
-		expect(Arr.sort(input, {}, 'a', 'b')).toEqual(output)
-		expect(Arr.sort(input2, {}, 'a', 'b', 'c')).toEqual(output2)
+		expect(record.update('a')(arr => arr.sort('b'))(input)).toEqual(output)
+		expect(record.update('a', 'b')(arr => arr.sort('c'))(input2)).toEqual(
+			output2
+		)
 	})
 })
 
@@ -142,7 +155,7 @@ describe('merge', () => {
 		const input2 = [1, 2, 1]
 		const output = [1, 2, 1, 1, 2, 1]
 
-		expect(Arr.merge(input1, input2)).toEqual(output)
+		expect(array.merge(input1, input2)).toEqual(output)
 	})
 
 	test('it should merge arrays, keeping only unique values', () => {
@@ -150,6 +163,14 @@ describe('merge', () => {
 		const input2 = [1, 2, 1, 3]
 		const output = [1, 2, 4, 3]
 
-		expect(Arr.merge(input1, input2, { unique: true })).toEqual(output)
+		expect(array.merge(input1, input2, { unique: true })).toEqual(output)
+	})
+
+	test('it should merge arrays, keeping only common values', () => {
+		const input1 = [1, 2, 1, 4]
+		const input2 = [1, 2, 1, 3]
+		const output = [1, 2]
+
+		expect(array.merge(input1, input2, { common: true })).toEqual(output)
 	})
 })

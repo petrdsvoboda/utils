@@ -1,51 +1,11 @@
-import * as Record from '../record'
-
-describe('get', () => {
-	test('it should get value from object', () => {
-		const input = { a: 1, b: 2 }
-		const output = 1
-
-		expect(Record.get(input, 'a')).toEqual(output)
-	})
-
-	test('it should get value from object on 5 levels', () => {
-		const lvl6 = 6
-		const lvl5 = { '5': lvl6 }
-		const lvl4 = { '4': lvl5 }
-		const lvl3 = { '3': lvl4 }
-		const lvl2 = { '2': lvl3 }
-		const lvl1 = { '1': lvl2 }
-
-		expect(Record.get(lvl1, '1')).toEqual(lvl2)
-		expect(Record.get(lvl1, '1', '2')).toEqual(lvl3)
-		expect(Record.get(lvl1, '1', '2', '3')).toEqual(lvl4)
-		expect(Record.get(lvl1, '1', '2', '3', '4')).toEqual(lvl5)
-		expect(Record.get(lvl1, '1', '2', '3', '4', '5')).toEqual(lvl6)
-	})
-
-	test('it should handle undefined', () => {
-		expect(Record.get(undefined, '1')).toEqual(undefined)
-	})
-
-	test('it should handle null', () => {
-		expect(Record.get(null as any, '1')).toEqual(undefined)
-	})
-
-	test('it should handle possible undefined branches', () => {
-		interface TestO {
-			a?: { [key: string]: string }
-		}
-		const input: TestO = { a: { b: '1' } }
-		expect(Record.get(input, 'a', 'b')).toEqual('1')
-	})
-})
+import * as record from '../record'
 
 describe('set', () => {
 	test('it should set value in object', () => {
 		const input = { a: 1, b: 2 }
 		const output = { a: 3, b: 2 }
 
-		expect(Record.set(input, 'a')(3)).toEqual(output)
+		expect(record.set('a')(3)(input)).toEqual(output)
 	})
 
 	test('it should set value in object on 5 levels', () => {
@@ -59,24 +19,24 @@ describe('set', () => {
 		const output = { 1: { '2': { '3': { '4': { '5': 7 } } } } }
 
 		expect(
-			Record.set(lvl1, '1')({ '2': { '3': { '4': { '5': 7 } } } })
+			record.set('1')({ '2': { '3': { '4': { '5': 7 } } } })(lvl1)
 		).toEqual(output)
 		expect(
-			Record.set(lvl1, '1', '2')({ '3': { '4': { '5': 7 } } })
+			record.set('1', '2')({ '3': { '4': { '5': 7 } } })(lvl1)
 		).toEqual(output)
-		expect(Record.set(lvl1, '1', '2', '3')({ '4': { '5': 7 } })).toEqual(
+		expect(record.set('1', '2', '3')({ '4': { '5': 7 } })(lvl1)).toEqual(
 			output
 		)
-		expect(Record.set(lvl1, '1', '2', '3', '4')({ '5': 7 })).toEqual(output)
-		expect(Record.set(lvl1, '1', '2', '3', '4', '5')(7)).toEqual(output)
+		expect(record.set('1', '2', '3', '4')({ '5': 7 })(lvl1)).toEqual(output)
+		expect(record.set('1', '2', '3', '4', '5')(7)(lvl1)).toEqual(output)
 	})
 
 	test('it should handle undefined', () => {
-		expect(Record.set(undefined, '1')(1)).toEqual(undefined)
+		expect(record.set('a')(3)(undefined)).toEqual(undefined)
 	})
 
 	test('it should handle null', () => {
-		expect(Record.set(null as any, '1')(1)).toEqual(undefined)
+		expect(record.set('a')(3)(null)).toEqual(null)
 	})
 
 	test('it should handle possible undefined branches', () => {
@@ -85,7 +45,7 @@ describe('set', () => {
 		}
 		const input: TestO = { a: { b: '1' } }
 		const output: TestO = { a: { b: '2' } }
-		expect(Record.set(input, 'a', 'b')('2')).toEqual(output)
+		expect(record.set('a', 'b')(2)(input)).toEqual(output)
 	})
 })
 
@@ -94,7 +54,7 @@ describe('update', () => {
 		const input = { a: 1, b: 2 }
 		const output = { a: 2, b: 2 }
 
-		expect(Record.update(input, 'a')(v => v + 1)).toEqual(output)
+		expect(record.update('a')(v => v + 1)(input)).toEqual(output)
 	})
 
 	test('it should update value in object on 5 levels', () => {
@@ -108,49 +68,31 @@ describe('update', () => {
 		const output = { 1: { '2': { '3': { '4': { '5': 7 } } } } }
 
 		expect(
-			Record.update(
-				lvl1,
-				'1'
-			)(v => ({
+			record.update('1')(v => ({
 				...v,
 				'2': { '3': { '4': { '5': v[2][3][4][5] + 1 } } }
-			}))
+			}))(lvl1)
 		).toEqual(output)
 		expect(
-			Record.update(
-				lvl1,
+			record.update(
 				'1',
 				'2'
-			)(v => ({
-				...v,
-				'3': { '4': { '5': v[3][4][5] + 1 } }
-			}))
+			)(v => ({ ...v, '3': { '4': { '5': v[3][4][5] + 1 } } }))(lvl1)
 		).toEqual(output)
 		expect(
-			Record.update(
-				lvl1,
+			record.update(
 				'1',
 				'2',
 				'3'
-			)(v => ({
-				...v,
-				'4': { '5': v[4][5] + 1 }
-			}))
+			)(v => ({ ...v, '4': { '5': v[4][5] + 1 } }))(lvl1)
 		).toEqual(output)
 		expect(
-			Record.update(
-				lvl1,
-				'1',
-				'2',
-				'3',
-				'4'
-			)(v => ({
-				...v,
-				'5': v[5] + 1
-			}))
+			record.update('1', '2', '3', '4')(v => ({ ...v, '5': v[5] + 1 }))(
+				lvl1
+			)
 		).toEqual(output)
 		expect(
-			Record.update(lvl1, '1', '2', '3', '4', '5')(v => v + 1)
+			record.update('1', '2', '3', '4', '5')(v => v + 1)(lvl1)
 		).toEqual(output)
 	})
 
@@ -161,12 +103,12 @@ describe('update', () => {
 		const d = { '1': { '2': { '3': { '4': undefined } } } }
 		const e = { '1': { '2': { '3': { '4': { '5': undefined } } } } }
 
-		expect(Record.update(undefined, '1')(v => v)).toEqual(undefined)
-		expect(Record.update(a, '1')(v => v)).toEqual(a)
-		expect(Record.update(b, '1', '2')(v => v)).toEqual(b)
-		expect(Record.update(c, '1', '2', '3')(v => v)).toEqual(c)
-		expect(Record.update(d, '1', '2', '3', '4')(v => v)).toEqual(d)
-		expect(Record.update(e, '1', '2', '3', '4', '5')(v => v)).toEqual(e)
+		expect(record.update('1')(v => v)(undefined)).toEqual(undefined)
+		expect(record.update('1')(v => v)(a)).toEqual(a)
+		expect(record.update('1', '2')(v => v)(b)).toEqual(b)
+		expect(record.update('1', '2', '3')(v => v)(c)).toEqual(c)
+		expect(record.update('1', '2', '3', '4')(v => v)(d)).toEqual(d)
+		expect(record.update('1', '2', '3', '4', '5')(v => v)(e)).toEqual(e)
 	})
 
 	test('it should handle null', () => {

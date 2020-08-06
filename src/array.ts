@@ -1,7 +1,6 @@
 import { nil } from './base'
 import { compare as compareDate } from './date'
 import { compare as compareNumber } from './number'
-import * as Record from './record'
 import { compare as compareString } from './string'
 import { CompareResult } from './types'
 
@@ -9,8 +8,11 @@ type CompareOptions = {
 	ascending?: boolean
 	isDate?: boolean
 }
-
-const compareFn = (a: any, b: any, options?: CompareOptions): CompareResult => {
+const compareFn = (
+	a: unknown,
+	b: unknown,
+	options?: CompareOptions
+): CompareResult => {
 	if (nil(a) || nil(b)) {
 		if (nil(a) && nil(b)) return 0
 		else if (nil(a)) return 1
@@ -22,135 +24,43 @@ const compareFn = (a: any, b: any, options?: CompareOptions): CompareResult => {
 		result = compareDate(new Date(a), new Date(b))
 	} else if (typeof a === 'string' && typeof b === 'string') {
 		result = compareString(a, b)
-	} else {
+	} else if (typeof a === 'number' && typeof b === 'number') {
 		result = compareNumber(a, b)
+	} else {
+		result = a === b ? 0 : a ? -1 : 1
 	}
 
-	if (
-		options &&
-		options.ascending !== undefined &&
-		options.ascending === false
-	) {
-		result = (result * -1) as CompareResult
-	}
-
+	if (options?.ascending === false) result = (result * -1) as CompareResult
 	return result
 }
 
-export function sort<T extends Record<string, any>, K1 extends keyof T>(
-	array: T[],
-	options: CompareOptions,
-	key1: K1
-): T[]
-export function sort<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof NonNullable<T[K1]>
->(array: T[], options: CompareOptions, key1: K1, key2: K2): T[]
-export function sort<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof NonNullable<T[K1]>,
-	K3 extends keyof NonNullable<NonNullable<T[K1]>[K2]>
->(array: T[], options: CompareOptions, key1: K1, key2: K2, key3: K3): T[]
-export function sort<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof NonNullable<T[K1]>,
-	K3 extends keyof NonNullable<T[K1][K2]>,
-	K4 extends keyof NonNullable<T[K1][K2][K3]>
->(
-	array: T[],
-	options: CompareOptions,
-	key1: K1,
-	key2: K2,
-	key3: K3,
-	key4: K4
-): T[]
-export function sort<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof NonNullable<T[K1]>,
-	K3 extends keyof NonNullable<T[K1][K2]>,
-	K4 extends keyof NonNullable<T[K1][K2][K3]>,
-	K5 extends keyof NonNullable<T[K1][K2][K3][K4]>
->(
-	array: T[],
-	options: CompareOptions,
-	key1: K1,
-	key2: K2,
-	key3: K3,
-	key4: K4,
-	key5: K5
-): T[]
-export function sort<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof T[K1],
-	K3 extends keyof T[K1][K2],
-	K4 extends keyof T[K1][K2][K3],
-	K5 extends keyof T[K1][K2][K3][K4]
->(
-	array: T[],
-	options: CompareOptions,
-	key1: K1,
-	key2?: K2,
-	key3?: K3,
-	key4?: K4,
-	key5?: K5
-): T[] {
-	return array.slice().sort((a, b) => {
-		let aVal: any
-		let bVal: any
+export const sort = <T extends Record<string, any>>(
+	key: keyof T,
+	options?: CompareOptions
+) => (arr: T[]): T[] =>
+	arr.slice().sort((a, b) => compareFn(a?.[key], b?.[key], options))
 
-		if (key2 === undefined) {
-			aVal = Record.get(a, key1)
-			bVal = Record.get(b, key1)
-		} else if (key3 === undefined) {
-			aVal = Record.get(a, key1, key2)
-			bVal = Record.get(b, key1, key2)
-		} else if (key4 === undefined) {
-			aVal = Record.get(a, key1, key2, key3)
-			bVal = Record.get(b, key1, key2, key3)
-		} else if (key5 === undefined) {
-			aVal = Record.get(a, key1, key2, key3, key4)
-			bVal = Record.get(b, key1, key2, key3, key4)
-		} else {
-			aVal = Record.get(a, key1, key2, key3, key4, key5)
-			bVal = Record.get(b, key1, key2, key3, key4, key5)
-		}
+export const unique = <T>(arr: T[]): T[] =>
+	arr.filter((x, i) => arr.indexOf(x) === i)
 
-		return compareFn(aVal, bVal, options)
-	})
-}
+export const union = <T>(left: T[], right: T[]): T[] =>
+	unique([...left, ...right])
 
-export const union = (left: any[], right: any[]): any[] => {
-	const arr = left.reduce<any[]>(
-		(acc, curr) => (acc.includes(curr) ? acc : [...acc, curr]),
-		[]
-	)
-	return right.reduce<any[]>(
-		(acc, curr) => (acc.includes(curr) ? acc : [...acc, curr]),
-		arr
-	)
-}
-
-export const intersection = (left: any[], right: any[]): any[] => {
-	return left.reduce<any[]>(
+export const intersection = <T>(left: T[], right: T[]): T[] =>
+	left.reduce<T[]>(
 		(acc, curr) => (right.includes(curr) ? acc : [...acc, curr]),
 		[]
 	)
-}
 
 type MergeOptions = {
 	unique?: boolean
 	common?: boolean
 }
-export function merge(
-	left: any[],
-	right: any[],
+export const merge = <T>(
+	left: T[],
+	right: T[],
 	options?: MergeOptions
-): any[] {
+): T[] => {
 	if (options && options.unique) {
 		return union(left, right)
 	} else if (options && options.common) {

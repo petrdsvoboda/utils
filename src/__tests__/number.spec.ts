@@ -1,4 +1,4 @@
-import { compare, round } from '../number'
+import { compare, random, round } from '../number'
 
 describe('compare', () => {
 	test('it should compare numbers', () => {
@@ -9,12 +9,12 @@ describe('compare', () => {
 })
 
 describe('round', () => {
-	test('it round without precision set', () => {
+	test('it rounds without precision set', () => {
 		expect(round(2.341)).toEqual(2)
 		expect(round(2.741)).toEqual(3)
 		expect(round(-2.341)).toEqual(-2)
 	})
-	test('it round with precision', () => {
+	test('it rounds with precision', () => {
 		expect(round(2.341, 0)).toEqual(2)
 		expect(round(2.341, 1)).toEqual(2.3)
 		expect(round(2.341, 2)).toEqual(2.34)
@@ -24,5 +24,26 @@ describe('round', () => {
 		expect(round(-2.361, 0)).toEqual(-2)
 		expect(round(-2.361, 1)).toEqual(-2.4)
 		expect(round(-2.361, 2)).toEqual(-2.36)
+	})
+})
+
+describe('random', () => {
+	beforeEach(() => {
+		jest.spyOn(global.Math, 'random').mockReturnValue(0.2)
+	})
+
+	afterEach(() => {
+		jest.spyOn(global.Math, 'random').mockRestore()
+	})
+
+	test('it generates random num', () => {
+		expect(random(10)).toEqual(2)
+		expect(round(5)).toEqual(3)
+		expect(round(1234)).toEqual(247)
+	})
+	test('it round with precision', () => {
+		expect(random(10, 5)).toEqual(2)
+		expect(round(5, 0)).toEqual(3)
+		expect(round(1234, -200)).toEqual(247)
 	})
 })
