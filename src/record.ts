@@ -326,9 +326,6 @@ export function update<
 	}
 }
 
-export const toArray = <T extends any>(record: Record<string, T>): T[] =>
-	Object.values(record).filter(notNil)
-
 type MergeOptions = { preserveNil: boolean }
 export function merge<
 	T extends Record<string, any>,
@@ -428,4 +425,37 @@ export function reduce<T, U>(
 		(acc, curr) => callback(acc, record[curr], curr),
 		initialValue
 	)
+}
+
+type Rec = Record<string, unknown>
+
+export function fromArray<
+	T extends Rec & Record<U, string | number>,
+	U extends string
+>(arr: T[], options: { key: U; loseKey?: false }): Record<string, T>
+export function fromArray<
+	T extends Rec & Record<U, string | number>,
+	U extends string
+>(arr: T[], options: { key: U; loseKey: true }): Record<string, Omit<T, U>>
+export function fromArray<
+	T extends Rec & Record<U, string | number>,
+	U extends string
+>(
+	arr: T[],
+	options: { key: U; loseKey?: boolean }
+): Record<string, T> | Record<string, Omit<T, U>> {
+	const { key, loseKey } = options
+	return arr.reduce((acc, curr) => {
+		const index = curr[key]
+		if (loseKey) {
+			const { [key]: _, ...rest } = curr
+			return { ...acc, [index]: rest }
+		} else {
+			return { ...acc, [index]: curr }
+		}
+	}, {} as any)
+}
+
+export function toArray<T extends Rec>(rec: Record<string | number, T>): T[] {
+	return Object.values(rec).filter(notNil)
 }

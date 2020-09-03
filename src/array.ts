@@ -159,3 +159,13 @@ export function merge(
 		return [...left, ...right]
 	}
 }
+
+type Arr = readonly any[]
+export function concat(...arrs: Arr[]): Arr {
+	const [arr, ...rest] = arrs
+	if (!arr) {
+		if (rest.length === 0) return []
+		return concat(...rest)
+	}
+	return [...arr, ...concat(...rest)]
+}

@@ -197,8 +197,8 @@ describe('update', () => {
 
 describe('toArray', () => {
 	test('it should convert map to array', () => {
-		const input = { a: 1, b: 2 }
-		const output = [1, 2]
+		const input = { a: { foo: 1 }, b: { foo: 2 } }
+		const output = [{ foo: 1 }, { foo: 2 }]
 
 		expect(Record.toArray(input)).toEqual(output)
 	})
