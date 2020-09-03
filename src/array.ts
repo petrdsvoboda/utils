@@ -146,11 +146,11 @@ type MergeOptions = {
 	unique?: boolean
 	common?: boolean
 }
-export function merge(
+export function merge<T = any>(
 	left: any[],
 	right: any[],
 	options?: MergeOptions
-): any[] {
+): T[] {
 	if (options && options.unique) {
 		return union(left, right)
 	} else if (options && options.common) {
@@ -161,7 +161,7 @@ export function merge(
 }
 
 type Arr = readonly any[]
-export function concat(...arrs: Arr[]): Arr {
+export function concat<T = any>(...arrs: Arr[]): T[] {
 	const [arr, ...rest] = arrs
 	if (!arr) {
 		if (rest.length === 0) return []
