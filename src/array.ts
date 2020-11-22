@@ -169,3 +169,25 @@ export function concat<T = any>(...arrs: Arr[]): T[] {
 	}
 	return [...arr, ...concat(...rest)]
 }
+
+export type GroupByOptions = {
+	isDate?: boolean
+}
+export const groupBy = <T>(
+	rows: T[],
+	key: keyof T,
+	options?: GroupByOptions
+): { [key: string]: T[] } =>
+	rows.reduce<{ [key: string]: T[] }>((acc, curr) => {
+		const values = Object.keys(acc)
+		let val: string
+		if (options?.isDate)
+			val = new Date(curr[key] as any).toLocaleDateString()
+		else val = (curr[key] as unknown) as string
+
+		if (values.includes(val)) {
+			return Record.update(acc, val)(vs => [...vs, curr])
+		} else {
+			return Record.set(acc, val)([curr])
+		}
+	}, {})

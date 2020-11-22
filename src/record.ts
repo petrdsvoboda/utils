@@ -397,20 +397,20 @@ export function merge<
 
 export function map<T>(
 	record: Record<string, T>,
-	callback: (value: T) => T
+	callback: (value: T, index: string) => T
 ): Record<string, T>
 export function map<T, U>(
 	record: Record<string, T>,
-	callback: (value: T) => U
+	callback: (value: T, index: string) => U
 ): Record<string, U>
 export function map<T, U>(
 	record: Record<string, T>,
-	callback: (value: T) => T | U
+	callback: (value: T, index: string) => T | U
 ): Record<string, T | U> {
 	return Object.keys(record).reduce<Record<string, T | U>>(
 		(acc, curr) => ({
 			...acc,
-			[curr]: callback(record[curr])
+			[curr]: callback(record[curr], curr)
 		}),
 		record
 	)
