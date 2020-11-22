@@ -185,6 +185,8 @@ export const groupBy = <T>(
 			val = new Date(curr[key] as any).toLocaleDateString()
 		else val = (curr[key] as unknown) as string
 
+		if (typeof val !== 'string') val = (val as any).toString()
+
 		if (values.includes(val)) {
 			return Record.update(acc, val)(vs => [...vs, curr])
 		} else {
