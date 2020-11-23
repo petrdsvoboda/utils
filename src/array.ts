@@ -179,17 +179,20 @@ export const groupBy = <T>(
 	options?: GroupByOptions
 ): { [key: string]: T[] } =>
 	rows.reduce<{ [key: string]: T[] }>((acc, curr) => {
-		const values = Object.keys(acc)
-		let val: string
+		const value = Record.get(curr, key)
+		if (!value) return acc
+
+		let parsed: string
 		if (options?.isDate)
-			val = new Date(curr[key] as any).toLocaleDateString()
-		else val = (curr[key] as unknown) as string
+			parsed = new Date(value as any).toLocaleDateString()
+		else parsed = (value as unknown) as string
 
-		if (typeof val !== 'string') val = (val as any).toString()
+		if (typeof value !== 'string') parsed = (parsed as any).toString()
 
-		if (values.includes(val)) {
-			return Record.update(acc, val)(vs => [...vs, curr])
+		const values = Object.keys(acc)
+		if (values.includes(parsed)) {
+			return Record.update(acc, parsed)(vs => [...vs, curr])
 		} else {
-			return Record.set(acc, val)([curr])
+			return Record.set(acc, parsed)([curr])
 		}
 	}, {})
