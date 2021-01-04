@@ -1,12 +1,11 @@
 import * as array from '../array'
-import * as record from '../record'
 
 describe('sort', () => {
 	test('it should perform sort', () => {
 		const input = [{ a: 2 }, { a: 1 }]
 		const output = [{ a: 1 }, { a: 2 }]
 
-		expect(array.sort('a')(input)).toEqual(output)
+		expect(array.sort(input, ['a'])).toEqual(output)
 	})
 
 	test('it should perform sort on 5 object levels', () => {
@@ -37,26 +36,18 @@ describe('sort', () => {
 			{ a: { b: { c: { d: { e: 2 } } } } }
 		]
 
-		expect(array.sort('a')(input1)).toEqual(output1)
-		expect(record.update('a')(arr => arr.sort('b'))(input2)).toEqual(
-			output2
-		)
-		expect(record.update('a', 'b')(arr => arr.sort('c'))(input3)).toEqual(
-			output3
-		)
-		expect(
-			record.update('a', 'b', 'c')(arr => arr.sort('d'))(input4)
-		).toEqual(output4)
-		expect(
-			record.update('a', 'b', 'c', 'd')(arr => arr.sort('e'))(input5)
-		).toEqual(output5)
+		expect(array.sort(input1, ['a'])).toEqual(output1)
+		expect(array.sort(input2, ['a', 'b'])).toEqual(output2)
+		expect(array.sort(input3, ['a', 'b', 'c'])).toEqual(output3)
+		expect(array.sort(input4, ['a', 'b', 'c', 'd'])).toEqual(output4)
+		expect(array.sort(input5, ['a', 'b', 'c', 'd', 'e'])).toEqual(output5)
 	})
 
 	test('it should perform sort with strings', () => {
 		const input = [{ a: 'b' }, { a: 'a' }]
 		const output = [{ a: 'a' }, { a: 'b' }]
 
-		expect(array.sort('a')(input)).toEqual(output)
+		expect(array.sort(input, ['a'])).toEqual(output)
 	})
 
 	test('it should perform sort with dates', () => {
@@ -66,21 +57,21 @@ describe('sort', () => {
 		const input = [{ a: date2 }, { a: date1 }]
 		const output = [{ a: date1 }, { a: date2 }]
 
-		expect(array.sort('a', { isDate: true })(input)).toEqual(output)
+		expect(array.sort(input, ['a'], { isDate: true })).toEqual(output)
 	})
 
 	test('it should perform descending sort', () => {
 		const input = [{ a: 2 }, { a: 1 }]
 		const output = [{ a: 2 }, { a: 1 }]
 
-		expect(array.sort('a', { ascending: false })(input)).toEqual(output)
+		expect(array.sort(input, ['a'], { ascending: false })).toEqual(output)
 	})
 
 	test('it should handle undefined values', () => {
 		const input = [{ a: undefined }, { a: 1 }]
 		const output = [{ a: 1 }, { a: undefined }]
 
-		expect(array.sort('a')(input)).toEqual(output)
+		expect(array.sort(input, ['a'])).toEqual(output)
 	})
 
 	test('it should handle nested undefined values', () => {
@@ -106,8 +97,8 @@ describe('sort', () => {
 			{ a: { b: undefined } }
 		]
 
-		expect(record.update('a')(arr => arr.sort('b'))(input)).toEqual(output)
-		expect(record.update('a', 'b')(arr => arr.sort('c'))(input2)).toEqual(
+		expect(array.sort(input as any, ['a', 'b'] as any)).toEqual(output)
+		expect(array.sort(input2 as any, ['a', 'b', 'c'] as any)).toEqual(
 			output2
 		)
 	})
@@ -116,7 +107,7 @@ describe('sort', () => {
 		const input = [{ a: null }, { a: 1 }]
 		const output = [{ a: 1 }, { a: null }]
 
-		expect(array.sort('a')(input)).toEqual(output)
+		expect(array.sort(input, ['a'])).toEqual(output)
 	})
 
 	test('it should handle nested null values', () => {
@@ -142,8 +133,8 @@ describe('sort', () => {
 			{ a: { b: null } }
 		]
 
-		expect(record.update('a')(arr => arr.sort('b'))(input)).toEqual(output)
-		expect(record.update('a', 'b')(arr => arr.sort('c'))(input2)).toEqual(
+		expect(array.sort(input as any, ['a', 'b'] as any)).toEqual(output)
+		expect(array.sort(input2 as any, ['a', 'b', 'c'] as any)).toEqual(
 			output2
 		)
 	})

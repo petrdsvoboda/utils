@@ -1,246 +1,55 @@
 import { merge as mergeArray } from './array'
-import { nil, notNil } from './base'
+import { notNil } from './base'
+import { Path, Prop } from './types'
 
-export function set<T extends Record<string, any>, K1 extends keyof T>(
-	key1: K1
-): (value: T[K1]) => (record: T | undefined) => T
-export function set<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof NonNullable<T[K1]>
->(key1: K1, key2: K2): (value: T[K1][K2]) => (record: T | undefined) => T
-export function set<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof NonNullable<T[K1]>,
-	K3 extends keyof NonNullable<T[K1][K2]>
->(
-	key1: K1,
-	key2: K2,
-	key3: K3
-): (value: T[K1][K2][K3]) => (record: T | undefined) => T
-export function set<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof NonNullable<T[K1]>,
-	K3 extends keyof NonNullable<T[K1][K2]>,
-	K4 extends keyof NonNullable<T[K1][K2][K3]>
->(
-	key1: K1,
-	key2: K2,
-	key3: K3,
-	key4: K4
-): (value: T[K1][K2][K3][K4]) => (record: T | undefined) => T
-export function set<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof NonNullable<T[K1]>,
-	K3 extends keyof NonNullable<T[K1][K2]>,
-	K4 extends keyof NonNullable<T[K1][K2][K3]>,
-	K5 extends keyof NonNullable<T[K1][K2][K3][K4]>
->(
-	key1: K1,
-	key2: K2,
-	key3: K3,
-	key4: K4,
-	key5: K5
-): (value: T[K1][K2][K3][K4][K5]) => (record: T | undefined) => T
-export function set<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof NonNullable<T[K1]>,
-	K3 extends keyof NonNullable<T[K1][K2]>,
-	K4 extends keyof NonNullable<T[K1][K2][K3]>,
-	K5 extends keyof NonNullable<T[K1][K2][K3][K4]>
->(
-	key1: K1,
-	key2?: K2,
-	key3?: K3,
-	key4?: K4,
-	key5?: K5
-): (
-	value:
-		| T[K1]
-		| T[K1][K2]
-		| T[K1][K2][K3]
-		| T[K1][K2][K3][K4]
-		| T[K1][K2][K3][K4][K5]
-) => (record: T | undefined) => T | undefined {
-	return (
-		value:
-			| T[K1]
-			| T[K1][K2]
-			| T[K1][K2][K3]
-			| T[K1][K2][K3][K4]
-			| T[K1][K2][K3][K4][K5]
-	) => (record: T | undefined): T | undefined => {
-		if (nil(record)) return undefined
+export function get<T extends Record<string, unknown>, P extends Path<T>>(
+	obj: T,
+	path: P
+): Prop<T, P> {
+	return (path as string[]).reduce(
+		(acc, curr) => acc?.[curr as any] as any,
+		obj
+	) as any
+}
 
-		if (key2 === undefined) {
-			return {
-				...record,
-				[key1]: value
-			}
-		} else if (key3 === undefined) {
-			return {
-				...record,
-				[key1]: set<T[K1], K2>(key2)(value)(record[key1])
-			}
-		} else if (key4 === undefined) {
-			return {
-				...record,
-				[key1]: set<T[K1], K2, K3>(key2, key3)(value)(record[key1])
-			}
-		} else if (key5 === undefined) {
-			return {
-				...record,
-				[key1]: set<T[K1], K2, K3, K4>(key2, key3, key4)(value)(
-					record[key1]
-				)
-			}
-		} else {
-			return {
-				...record,
-				[key1]: set<T[K1], K2, K3, K4, K5>(
-					key2,
-					key3,
-					key4,
-					key5
-				)(value)(record[key1])
-			}
+export function set<T extends Record<string, unknown>, P extends Path<T>>(
+	obj: T,
+	path: P,
+	value: Prop<T, P>
+): T {
+	if (!path) return obj
+	const [head, ...tail] = path
+	if (tail.length === 0) {
+		return {
+			...obj,
+			[head]: value
+		}
+	} else {
+		if (!obj?.[head]) return obj
+		return {
+			...obj,
+			[head]: set(obj[head] as any, tail as any, value)
 		}
 	}
 }
 
-type UpdateFn<T> = (value: T) => T
-export function update<T extends Record<string, any>, K1 extends keyof T>(
-	key1: K1
-): (callback: UpdateFn<NonNullable<T[K1]>>) => (record: T | undefined) => T
-export function update<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof NonNullable<T[K1]>
->(
-	key1: K1,
-	key2: K2
-): (
-	callback: UpdateFn<NonNullable<NonNullable<T[K1]>[K2]>>
-) => (record: T | undefined) => T
-export function update<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof NonNullable<T[K1]>,
-	K3 extends keyof NonNullable<T[K1][K2]>
->(
-	key1: K1,
-	key2: K2,
-	key3: K3
-): (
-	callback: UpdateFn<NonNullable<NonNullable<NonNullable<T[K1]>[K2]>[K3]>>
-) => (record: T | undefined) => T
-export function update<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof NonNullable<T[K1]>,
-	K3 extends keyof NonNullable<T[K1][K2]>,
-	K4 extends keyof NonNullable<T[K1][K2][K3]>
->(
-	key1: K1,
-	key2: K2,
-	key3: K3,
-	key4: K4
-): (
-	callback: UpdateFn<
-		NonNullable<NonNullable<NonNullable<NonNullable<T[K1]>[K2]>[K3]>[K4]>
-	>
-) => (record: T | undefined) => T
-export function update<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof NonNullable<T[K1]>,
-	K3 extends keyof NonNullable<T[K1][K2]>,
-	K4 extends keyof NonNullable<T[K1][K2][K3]>,
-	K5 extends keyof NonNullable<T[K1][K2][K3][K4]>
->(
-	key1: K1,
-	key2: K2,
-	key3: K3,
-	key4: K4,
-	key5: K5
-): (
-	callback: UpdateFn<
-		NonNullable<
-			NonNullable<
-				NonNullable<NonNullable<NonNullable<T[K1]>[K2]>[K3]>[K4]
-			>[K5]
-		>
-	>
-) => (record: T | undefined) => T
-export function update<
-	T extends Record<string, any>,
-	K1 extends keyof T,
-	K2 extends keyof NonNullable<T[K1]>,
-	K3 extends keyof NonNullable<T[K1][K2]>,
-	K4 extends keyof NonNullable<T[K1][K2][K3]>,
-	K5 extends keyof NonNullable<T[K1][K2][K3][K4]>
->(
-	key1: K1,
-	key2?: K2,
-	key3?: K3,
-	key4?: K4,
-	key5?: K5
-): (
-	callback:
-		| UpdateFn<NonNullable<T[K1]>>
-		| UpdateFn<NonNullable<NonNullable<T[K1]>[K2]>>
-		| UpdateFn<NonNullable<NonNullable<NonNullable<T[K1]>[K2]>[K3]>>
-		| UpdateFn<
-				NonNullable<
-					NonNullable<NonNullable<NonNullable<T[K1]>[K2]>[K3]>[K4]
-				>
-		  >
-		| UpdateFn<
-				NonNullable<
-					NonNullable<
-						NonNullable<NonNullable<NonNullable<T[K1]>[K2]>[K3]>[K4]
-					>[K5]
-				>
-		  >
-) => (record: T | undefined) => T | undefined {
-	return callback => (record): T | undefined => {
-		if (nil(record)) return undefined
-
-		if (key2 === undefined) {
-			const value = record[key1]
-			if (value === undefined) return record
-			return set<T, K1>(key1)(callback(value))(record)
-		} else if (key3 === undefined) {
-			const value = record[key1]?.[key2]
-			if (value === undefined) return record
-			return set<T, K1, K2>(key1, key2)(callback(value))(record)
-		} else if (key4 === undefined) {
-			const value = record[key1]?.[key2]?.[key3]
-			if (value === undefined) return record
-			return set<T, K1, K2, K3>(key1, key2, key3)(callback(value))(record)
-		} else if (key5 === undefined) {
-			const value = record[key1]?.[key2]?.[key3]?.[key4]
-			if (value === undefined) return record
-			return set<T, K1, K2, K3, K4>(
-				key1,
-				key2,
-				key3,
-				key4
-			)(callback(value))(record)
-		} else {
-			const value = record[key1]?.[key2]?.[key3]?.[key4]?.[key5]
-			if (value === undefined) return record
-			return set<T, K1, K2, K3, K4, K5>(
-				key1,
-				key2,
-				key3,
-				key4,
-				key5
-			)(callback(value))(record)
+export function update<T extends Record<string, unknown>, P extends Path<T>>(
+	obj: T,
+	path: P,
+	updateFn: (value: Prop<T, P>) => any
+): T {
+	if (!path) return obj
+	const [head, ...tail] = path
+	if (tail.length === 0) {
+		return {
+			...obj,
+			[head]: updateFn(obj?.[head] as any)
+		}
+	} else {
+		if (!obj?.[head]) return obj
+		return {
+			...obj,
+			[head]: update(obj[head] as any, tail as any, updateFn)
 		}
 	}
 }
@@ -249,25 +58,28 @@ export const toArray = <T extends any>(record: Record<string, T>): T[] =>
 	Object.values(record).filter(notNil)
 
 type MergeOptions = { preserveNil: boolean }
+export function merge(
+	left: undefined,
+	right: undefined,
+	options?: MergeOptions
+): undefined
+export function merge<T extends Record<string, unknown>>(
+	left: T,
+	right: undefined,
+	options?: MergeOptions
+): T
+export function merge<U extends Record<string, unknown>>(
+	left: undefined,
+	right: U,
+	options?: MergeOptions
+): U
 export function merge<
-	T extends Record<string, any>,
-	U extends Record<string, any>
->(left: undefined, right: undefined, options?: MergeOptions): undefined
-export function merge<
-	T extends Record<string, any>,
-	U extends Record<string, any>
->(left: T, right: undefined, options?: MergeOptions): T
-export function merge<
-	T extends Record<string, any>,
-	U extends Record<string, any>
->(left: undefined, right: U, options?: MergeOptions): U
-export function merge<
-	T extends Record<string, any>,
-	U extends Record<string, any>
+	T extends Record<string, unknown>,
+	U extends Record<string, unknown>
 >(left: T, right: U, options?: MergeOptions): T & U
 export function merge<
-	T extends Record<string, any>,
-	U extends Record<string, any>
+	T extends Record<string, unknown>,
+	U extends Record<string, unknown>
 >(
 	left: T | undefined,
 	right: U | undefined,
@@ -319,20 +131,20 @@ export function merge<
 
 export function map<T>(
 	record: Record<string, T>,
-	callback: (value: T) => T
+	callback: (value: T, index?: number) => T
 ): Record<string, T>
 export function map<T, U>(
 	record: Record<string, T>,
-	callback: (value: T) => U
+	callback: (value: T, index?: number) => U
 ): Record<string, U>
 export function map<T, U>(
 	record: Record<string, T>,
-	callback: (value: T) => T | U
+	callback: (value: T, index?: number) => T | U
 ): Record<string, T | U> {
 	return Object.keys(record).reduce<Record<string, T | U>>(
-		(acc, curr) => ({
+		(acc, curr, index) => ({
 			...acc,
-			[curr]: callback(record[curr])
+			[curr]: callback(record[curr], index)
 		}),
 		record
 	)

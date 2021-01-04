@@ -38,12 +38,12 @@ describe('random', () => {
 
 	test('it generates random num', () => {
 		expect(random(10)).toEqual(2)
-		expect(round(5)).toEqual(3)
-		expect(round(1234)).toEqual(247)
+		expect(random(5)).toEqual(1)
+		expect(random(1234)).toEqual(247)
 	})
-	test('it round with precision', () => {
-		expect(random(10, 5)).toEqual(2)
-		expect(round(5, 0)).toEqual(3)
-		expect(round(1234, -200)).toEqual(247)
+	test('it rounds with precision', () => {
+		expect(random(10, 5)).toEqual(6)
+		expect(random(5, 0)).toEqual(1)
+		expect(random(1234, -200)).toEqual(87)
 	})
 })

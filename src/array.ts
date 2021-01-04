@@ -1,8 +1,9 @@
 import { nil } from './base'
 import { compare as compareDate } from './date'
 import { compare as compareNumber } from './number'
+import { get } from './record'
 import { compare as compareString } from './string'
-import { CompareResult } from './types'
+import { CompareResult, Path } from './types'
 
 type CompareOptions = {
 	ascending?: boolean
@@ -21,7 +22,7 @@ const compareFn = (
 
 	let result: CompareResult = 0
 	if (options && options.isDate) {
-		result = compareDate(new Date(a), new Date(b))
+		result = compareDate(new Date(a as any), new Date(b as any))
 	} else if (typeof a === 'string' && typeof b === 'string') {
 		result = compareString(a, b)
 	} else if (typeof a === 'number' && typeof b === 'number') {
@@ -34,11 +35,12 @@ const compareFn = (
 	return result
 }
 
-export const sort = <T extends Record<string, any>>(
-	key: keyof T,
+export const sort = <T extends Record<string, unknown>>(
+	arr: T[],
+	path: Path<T>,
 	options?: CompareOptions
-) => (arr: T[]): T[] =>
-	arr.slice().sort((a, b) => compareFn(a?.[key], b?.[key], options))
+): T[] =>
+	arr.slice().sort((a, b) => compareFn(get(a, path), get(b, path), options))
 
 export const unique = <T>(arr: T[]): T[] =>
 	arr.filter((x, i) => arr.indexOf(x) === i)
@@ -48,7 +50,8 @@ export const union = <T>(left: T[], right: T[]): T[] =>
 
 export const intersection = <T>(left: T[], right: T[]): T[] =>
 	left.reduce<T[]>(
-		(acc, curr) => (right.includes(curr) ? acc : [...acc, curr]),
+		(acc, curr) =>
+			right.includes(curr) && !acc.includes(curr) ? [...acc, curr] : acc,
 		[]
 	)
 
