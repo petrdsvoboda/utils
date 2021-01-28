@@ -1,5 +1,5 @@
 import { nil } from './base'
-import { compare as compareDate, toLocalDate } from './date'
+import { compare as compareDate, formatDate } from './date'
 import { compare as compareNumber } from './number'
 import { get, set, update } from './record'
 import { compare as compareString } from './string'
@@ -98,7 +98,7 @@ export const groupBy = <T>(
 		if (!value) return acc
 
 		let parsed: string
-		if (options?.isDate) parsed = toLocalDate(value as any) as any
+		if (options?.isDate) parsed = formatDate(value as any)
 		else if (options?.keyFn) parsed = options.keyFn(value as any)
 		else parsed = (value as unknown) as string
 
