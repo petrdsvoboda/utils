@@ -86,7 +86,7 @@ export function concat<T = any>(...arrs: Arr[]): T[] {
 
 export type GroupByOptions = {
 	isDate?: boolean
-	keyFn: (value: any) => string
+	keyFn?: (value: any) => string
 }
 export const groupBy = <T>(
 	rows: T[],
