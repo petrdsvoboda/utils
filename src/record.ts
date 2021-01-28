@@ -2,17 +2,14 @@ import { merge as mergeArray } from './array'
 import { notNil } from './base'
 import { Path, Prop } from './types'
 
-export function get<T extends Record<string, unknown>, P extends Path<T>>(
-	obj: T,
-	path: P
-): Prop<T, P> {
+export function get<T, P extends Path<T>>(obj: T, path: P): Prop<T, P> {
 	return (path as string[]).reduce(
-		(acc, curr) => acc?.[curr as any] as any,
+		(acc, curr) => (acc as any)?.[curr],
 		obj
 	) as any
 }
 
-export function set<T extends Record<string, unknown>, P extends Path<T>>(
+export function set<T, P extends Path<T>>(
 	obj: T,
 	path: P,
 	value: Prop<T, P>
@@ -33,7 +30,7 @@ export function set<T extends Record<string, unknown>, P extends Path<T>>(
 	}
 }
 
-export function update<T extends Record<string, unknown>, P extends Path<T>>(
+export function update<T, P extends Path<T>>(
 	obj: T,
 	path: P,
 	updateFn: (value: Prop<T, P>) => any
@@ -53,9 +50,6 @@ export function update<T extends Record<string, unknown>, P extends Path<T>>(
 		}
 	}
 }
-
-export const toArray = <T extends any>(record: Record<string, T>): T[] =>
-	Object.values(record).filter(notNil)
 
 type MergeOptions = { preserveNil: boolean }
 export function merge(
@@ -160,3 +154,42 @@ export function reduce<T, U>(
 		initialValue
 	)
 }
+
+export function fromArray<T, K extends keyof T>(
+	arr: T[],
+	options: {
+		key: K
+		loseKey?: false
+	}
+): Record<string, T>
+export function fromArray<T, K extends keyof T>(
+	arr: T[],
+	options: {
+		key: K
+		loseKey: true
+	}
+): Record<string, Omit<T, K>>
+export function fromArray<T, K extends keyof T>(
+	arr: T[],
+	options: { key: K; loseKey?: boolean }
+): Record<string, T | Omit<T, K>> {
+	const { key, loseKey } = options
+	return arr.reduce((acc, curr) => {
+		const index = curr[key]
+		if (loseKey) {
+			const { [key]: _, ...rest } = curr
+			return {
+				...acc,
+				[index as any]: rest
+			}
+		} else {
+			return {
+				...acc,
+				[index as any]: curr
+			}
+		}
+	}, {})
+}
+
+export const toArray = <T extends any>(record: Record<string, T>): T[] =>
+	Object.values(record).filter(notNil)

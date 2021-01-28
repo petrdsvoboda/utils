@@ -1,7 +1,7 @@
 import { nil } from './base'
-import { compare as compareDate } from './date'
+import { compare as compareDate, toLocalDate } from './date'
 import { compare as compareNumber } from './number'
-import { get } from './record'
+import { get, set, update } from './record'
 import { compare as compareString } from './string'
 import { CompareResult, Path } from './types'
 
@@ -72,3 +72,42 @@ export const merge = <T>(
 		return [...left, ...right]
 	}
 }
+
+type Arr = readonly any[]
+
+export function concat<T = any>(...arrs: Arr[]): T[] {
+	const [arr, ...rest] = arrs
+	if (!arr) {
+		if (rest.length === 0) return []
+		return concat(...rest)
+	}
+	return [...arr, ...concat(...rest)]
+}
+
+export type GroupByOptions = {
+	isDate?: boolean
+	keyFn: (value: any) => string
+}
+export const groupBy = <T>(
+	rows: T[],
+	key: Path<T>,
+	options?: GroupByOptions
+): { [key: string]: T[] } =>
+	rows.reduce<{ [key: string]: T[] }>((acc, curr) => {
+		const value = get(curr, key)
+		if (!value) return acc
+
+		let parsed: string
+		if (options?.isDate) parsed = toLocalDate(value as any) as any
+		else if (options?.keyFn) parsed = options.keyFn(value as any)
+		else parsed = (value as unknown) as string
+
+		if (typeof value !== 'string') parsed = (parsed as any).toString()
+
+		const values = Object.keys(acc)
+		if (values.includes(parsed)) {
+			return update(acc, [parsed], vs => [...vs, curr])
+		} else {
+			return set(acc, [parsed], [curr])
+		}
+	}, {})

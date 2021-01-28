@@ -11,31 +11,22 @@ export type Prev = [never, 0, 1, 2, 3, 4, 5, ...0[]]
 // 	  }[keyof T]
 // 	: never
 
-export type Path<T extends Record<string, unknown>, D extends number = 5> = [
-	D
-] extends [never]
+export type Path<T, D extends number = 5> = [D] extends [never]
 	? never
 	:
 			| [keyof T]
 			| {
-					[K in keyof T]: T[K] extends Record<string, unknown>
-						? [K, ...Path<T[K], Prev[D]>]
-						: never
+					[K in keyof T]: [K, ...Path<T[K], Prev[D]>]
 			  }[keyof T]
 
-export type Prop<
-	T extends Record<string, unknown>,
-	P extends [] | [any] | any[]
-> = P extends [infer U]
+export type Prop<T, P extends [] | [any] | any[]> = P extends [infer U]
 	? U extends keyof T
 		? T[U]
 		: never
 	: P extends [infer U, ...infer R]
 	? (U extends keyof T
 			? T[U] extends infer U2
-				? U2 extends Record<string, unknown>
-					? [Prop<U2, R>]
-					: never
+				? [Prop<U2, R>]
 				: never
 			: never)[0]
 	: any
