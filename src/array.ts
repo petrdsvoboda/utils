@@ -35,7 +35,7 @@ const compareFn = (
 	return result
 }
 
-export const sort = <T extends Record<string, unknown>>(
+export const sort = <T>(
 	arr: T[],
 	path: Path<T>,
 	options?: CompareOptions
