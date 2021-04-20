@@ -16,6 +16,7 @@ export function set<T, P extends Path<T>>(
 ): T {
 	if (!path) return obj
 	const [head, ...tail] = path
+	if (!head) return obj
 	if (tail.length === 0) {
 		return {
 			...obj,
@@ -37,6 +38,7 @@ export function update<T, P extends Path<T>>(
 ): T {
 	if (!path) return obj
 	const [head, ...tail] = path
+	if (!head) return obj
 	if (tail.length === 0) {
 		return {
 			...obj,
