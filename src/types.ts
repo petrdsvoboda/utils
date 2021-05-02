@@ -11,6 +11,26 @@ export type Prev = [never, 0, 1, 2, 3, 4, 5, ...0[]]
 // 	  }[keyof T]
 // 	: never
 
+export type Path<T, D extends number = 4> = [D] extends [never]
+	? never
+	:
+			| [keyof T]
+			| {
+					[K in keyof T]: [K, ...Path<T[K], Prev[D]>]
+			  }[keyof T]
+
+export type Prop<T, P extends [] | [any] | any[]> = P extends [infer U]
+	? U extends keyof T
+		? T[U]
+		: never
+	: P extends [infer U, ...infer R]
+	? (U extends keyof T
+			? T[U] extends infer U2
+				? [Prop<U2, R>]
+				: never
+			: never)[0]
+	: any
+
 // export type Prop<T, P extends Path<T>, D extends number = 5> = [D] extends [
 // 	never
 // ]
@@ -26,35 +46,3 @@ export type Prev = [never, 0, 1, 2, 3, 4, 5, ...0[]]
 // 			: never
 // 		: never
 // 	: never
-
-export type Join<K, P> = K extends string | number
-	? P extends string | number
-		? `${K}${'' extends P ? '' : '.'}${P}` | P
-		: never
-	: never
-
-export type Path<T, D extends number = 5> = [D] extends [never]
-	? never
-	: T extends object
-	? { [K in keyof T]-?: [K] | [K, ...Path<T[K], Prev[D]>] }[keyof T]
-	: []
-
-export type Path2<T, D extends number = 5> = [D] extends [never]
-	? never
-	:
-			| [keyof T]
-			| {
-					[K in keyof T]: [K, ...Path2<T[K], Prev[D]>]
-			  }[keyof T]
-
-export type Prop<T, P extends [] | [any] | any[]> = P extends [infer U]
-	? U extends keyof T
-		? T[U]
-		: never
-	: P extends [infer U, ...infer R]
-	? (U extends keyof T
-			? T[U] extends infer U2
-				? [Prop<U2, R>]
-				: never
-			: never)[0]
-	: any

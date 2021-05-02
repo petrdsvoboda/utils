@@ -16,7 +16,6 @@ export function set<T, P extends Path<T>>(
 ): T {
 	if (!path) return obj
 	const [head, ...tail] = path
-	if (!head) return obj
 	if (tail.length === 0) {
 		return {
 			...obj,
@@ -38,7 +37,6 @@ export function update<T, P extends Path<T>>(
 ): T {
 	if (!path) return obj
 	const [head, ...tail] = path
-	if (!head) return obj
 	if (tail.length === 0) {
 		return {
 			...obj,
@@ -157,6 +155,14 @@ export function reduce<T, U>(
 	)
 }
 
+export function fromArray<T, K extends keyof T>(arr: T[]): Record<string, T>
+export function fromArray<T, K extends keyof T>(
+	arr: T[],
+	options: {
+		key?: K
+		loseKey?: false
+	}
+): Record<string, T>
 export function fromArray<T, K extends keyof T>(
 	arr: T[],
 	options: {
@@ -173,21 +179,21 @@ export function fromArray<T, K extends keyof T>(
 ): Record<string, Omit<T, K>>
 export function fromArray<T, K extends keyof T>(
 	arr: T[],
-	options: { key: K; loseKey?: boolean }
+	options?: { key?: K; loseKey?: boolean }
 ): Record<string, T | Omit<T, K>> {
-	const { key, loseKey } = options
-	return arr.reduce((acc, curr) => {
-		const index = curr[key]
-		if (loseKey) {
+	const { key, loseKey } = options ?? {}
+	return arr.reduce((acc, curr, index) => {
+		const indexKey = key ? curr[key] : index
+		if (key && loseKey) {
 			const { [key]: _, ...rest } = curr
 			return {
 				...acc,
-				[index as any]: rest
+				[indexKey as any]: rest
 			}
 		} else {
 			return {
 				...acc,
-				[index as any]: curr
+				[indexKey as any]: curr
 			}
 		}
 	}, {})
