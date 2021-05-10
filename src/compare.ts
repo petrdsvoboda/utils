@@ -22,12 +22,12 @@ export interface CompareObject {
 	[key: string]: any | CompareObject
 }
 
-type UnaryChange<T> = [type: 'added' | 'removed', value: T]
-type BinaryChange<T> = [type: 'modified', value: [T, T]]
-type Change<T> = UnaryChange<T> | BinaryChange<T>
+type UnaryChange = [type: 'added' | 'removed', value: any]
+type BinaryChange = [type: 'modified', value: [any, any]]
+type Change = UnaryChange | BinaryChange
 
 export interface CompareResult {
-	[key: string]: Change<any> | CompareResult
+	[key: string]: Change | CompareResult
 }
 
 const isCompareType = (value: any): value is CompareSchemaType =>
@@ -96,11 +96,13 @@ const compareKey = (
 	} else if (isCompareObject(schemaValue)) {
 		const [_, nestedSchema] = schemaValue
 		const result = compare_(nestedSchema, a[key], b[key])
+		if (Object.keys(result).length === 0) return changes
 		return set(changes, [key], result)
 	} else if (isCompareArray(schemaValue)) {
 		const [_, nestedType] = schemaValue
 		const arraySchema = getArraySchema(a[key], b[key], nestedType)
 		const result = compare_(arraySchema, a[key], b[key])
+		if (Object.keys(result).length === 0) return changes
 		return set(changes, [key], result)
 	} else if (isCompareObjectArray(schemaValue)) {
 		const [_, nestedSchema, indexKey] = schemaValue
@@ -112,27 +114,34 @@ const compareKey = (
 			nestedSchema,
 			indexKey
 		)
-		const result = Object.keys(arraySchema).reduce((acc, curr) => {
-			const compareRes = compareValues(arraySchema, aArr, bArr, curr)
-			const currCompare = compareRes[curr] as Change<any>
-			return {
-				...acc,
-				[curr]: ['added', 'removed'].includes(currCompare[0])
-					? currCompare
-					: compare_(
-							arraySchema[curr] as any,
-							aArr[curr] as any,
-							bArr[curr] as any
-					  )
-			}
-		}, {})
+		const result = Object.keys(arraySchema).reduce<CompareResult>(
+			(acc, curr) => {
+				const compareRes = compareValues(arraySchema, aArr, bArr, curr)
+				if (!compareRes[curr]) return acc
+
+				const currCompare = compareRes[curr] as Change
+				if (['added', 'removed'].includes(currCompare[0])) {
+					return set(acc, [curr], currCompare)
+				} else {
+					const result = compare_(
+						arraySchema[curr] as any,
+						aArr[curr] as any,
+						bArr[curr] as any
+					)
+					if (Object.keys(result).length === 0) return changes
+					return set(acc, [curr], result)
+				}
+			},
+			{}
+		)
+		if (Object.keys(result).length === 0) return changes
 		return set(changes, [key], result)
 	}
 
 	return changes
 }
 
-export const compare_ = (
+const compare_ = (
 	schema: CompareSchema,
 	a: CompareObject,
 	b: CompareObject
@@ -145,28 +154,19 @@ export const compare = (
 	schema: CompareSchema,
 	a?: CompareObject,
 	b?: CompareObject
-): { version: number; result?: CompareResult } => {
+): { version: number; schema: CompareSchema; data?: CompareResult } => {
 	const version = 2
-	if (!a || !b) return { version }
-	const result = compare_(schema, a, b)
-	return { version, result }
+	if (!a || !b) return { version, schema }
+	const data = compare_(schema, a, b)
+	return { version, schema, data }
 }
 
-const isChange = (value: any): value is Change<any> =>
+const isChange = (value: any): value is Change =>
 	['added', 'removed', 'modified'].includes(value?.[0])
-const isBinaryChange = (value: any): value is BinaryChange<any> =>
+const isBinaryChange = (value: any): value is BinaryChange =>
 	['modified'].includes(value?.[0])
 
-type SimpleMergeElType = { [key: string]: Change<any> | undefined }
-const simpleMergeCompare = (
-	left: SimpleMergeElType,
-	right: SimpleMergeElType
-) => (acc: CompareResult, curr: string): SimpleMergeElType => {
-	const leftVal = left[curr]
-	return undefined as any
-}
-
-export const mergeCompare = (
+export const compareMerge = (
 	left: CompareResult,
 	right: CompareResult
 ): CompareResult => {
@@ -176,7 +176,7 @@ export const mergeCompare = (
 		const rValue = right[curr]
 		if (!lValue) return { ...acc, [curr]: rValue }
 
-		let result: Change<any> | CompareResult
+		let result: Change | CompareResult
 		if (isChange(lValue) && isChange(rValue)) {
 			const lType = lValue[0]
 			if (isBinaryChange(lValue)) {
@@ -193,7 +193,7 @@ export const mergeCompare = (
 				}
 			}
 		} else if (!isChange(lValue) && !isChange(rValue)) {
-			result = mergeCompare(lValue, rValue)
+			result = compareMerge(lValue, rValue)
 		} else {
 			result = {}
 		}

@@ -7,7 +7,7 @@ export * as record from './record'
 export * as string from './string'
 export * as types from './types'
 
-import { compare, mergeCompare } from './compare'
+import { compare, compareMerge } from './compare'
 
 const schema = {
 	a: 'string',
@@ -51,7 +51,7 @@ const obj2 = {
 }
 
 const res = compare(schema, obj1, obj2)
-const res2 = mergeCompare(
+const res2 = compareMerge(
 	{
 		a: ['added', 'Testing2'],
 		c: ['modified', [true, false]],
