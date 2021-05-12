@@ -44,13 +44,15 @@ export type CompareData = {
 	data?: CompareResult
 }
 
-const isCompareType = (value: any): value is CompareSchemaType =>
+export const isCompareType = (value: any): value is CompareSchemaType =>
 	['string', 'number', 'boolean', 'date'].includes(value)
-const isCompareObject = (value: any): value is CompareSchemaObject =>
+export const isCompareObject = (value: any): value is CompareSchemaObject =>
 	value?.[0] === 'object'
-const isCompareArray = (value: any): value is CompareSchemaArray =>
+export const isCompareArray = (value: any): value is CompareSchemaArray =>
 	value?.[0] === 'array' && isCompareType(value?.[1])
-const isCompareObjectArray = (value: any): value is CompareSchemaObjectArray =>
+export const isCompareObjectArray = (
+	value: any
+): value is CompareSchemaObjectArray =>
 	value?.[0] === 'array' && !isCompareType(value?.[1])
 
 const compareDates = (a: any, b: any) =>
@@ -175,9 +177,9 @@ export const compare = (
 	return { version, schema, data }
 }
 
-const isChange = (value: any): value is Change =>
+export const isChange = (value: any): value is Change =>
 	['added', 'removed', 'modified'].includes(value?.[0])
-const isBinaryChange = (value: any): value is BinaryChange =>
+export const isBinaryChange = (value: any): value is BinaryChange =>
 	['modified'].includes(value?.[0])
 
 const compareMerge_ = (
@@ -236,6 +238,10 @@ export const compareMerge = (
 		return right
 	} else if (!right) {
 		return left
+	}
+
+	if (!left.version || left.version !== right.version) {
+		return right
 	}
 
 	const data = compareMerge_(left.data, right.data)
