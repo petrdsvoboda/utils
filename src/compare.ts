@@ -2,6 +2,8 @@ import * as arr from './array'
 import { nil } from './base'
 import { fromArray, merge, set } from './record'
 
+const VERSION = 2
+
 type CompareSchemaType = 'string' | 'number' | 'boolean' | 'date'
 type CompareSchemaObject = readonly [type: 'object', value: CompareSchema]
 type CompareSchemaArray = readonly [type: 'array', value: CompareSchemaType]
@@ -28,6 +30,12 @@ type Change = UnaryChange | BinaryChange
 
 export interface CompareResult {
 	[key: string]: Change | CompareResult
+}
+
+export type CompareData = {
+	version: number
+	schema: CompareSchema
+	data?: CompareResult
 }
 
 const isCompareType = (value: any): value is CompareSchemaType =>
@@ -154,8 +162,8 @@ export const compare = (
 	schema: CompareSchema,
 	a?: CompareObject,
 	b?: CompareObject
-): { version: number; schema: CompareSchema; data?: CompareResult } => {
-	const version = 2
+): CompareData => {
+	const version = VERSION
 	if (!a || !b) return { version, schema }
 	const data = compare_(schema, a, b)
 	return { version, schema, data }
@@ -166,12 +174,20 @@ const isChange = (value: any): value is Change =>
 const isBinaryChange = (value: any): value is BinaryChange =>
 	['modified'].includes(value?.[0])
 
-export const compareMerge = (
-	left: CompareResult,
-	right: CompareResult
+const compareMerge_ = (
+	left?: CompareResult,
+	right?: CompareResult
 ): CompareResult => {
+	if (!left || !right) {
+		return {}
+	} else if (!left) {
+		return right
+	} else if (!right) {
+		return left
+	}
+
 	const keys = Object.keys(right)
-	return keys.reduce((acc, curr) => {
+	const merged = keys.reduce((acc, curr) => {
 		const lValue = left[curr]
 		const rValue = right[curr]
 		if (!lValue) return { ...acc, [curr]: rValue }
@@ -193,42 +209,29 @@ export const compareMerge = (
 				}
 			}
 		} else if (!isChange(lValue) && !isChange(rValue)) {
-			result = compareMerge(lValue, rValue)
+			result = compareMerge_(lValue, rValue)
 		} else {
 			result = {}
 		}
 		return set(acc, [curr], result)
-
-		// if (left[curr] === undefined || Array.isArray(right[curr])) {
-		// 	return simpleMergeCompare(left as any, right as any)(
-		// 		acc,
-		// 		curr as any
-		// 	) as any
-		// } else {
-		// 	const leftMap = left[curr] as CompareSchemaResultArray<{
-		// 		[key: string]: null
-		// 	}>
-		// 	const rightMap = right[curr] as CompareSchemaResultArray<{
-		// 		[key: string]: null
-		// 	}>
-
-		// 	acc[curr] = Object.keys(rightMap).reduce((map, key) => {
-		// 		const l = rightMap[key]
-		// 		const r = rightMap[key]
-
-		// 		if (r[0] === 'added' || r[0] === 'deleted') {
-		// 			map[key] = r
-		// 		} else {
-		// 			map[key][1] = simpleMergeCompare(l[1], r[1])(
-		// 				l[1],
-		// 				Object.keys(r[1]) as any
-		// 			)
-		// 		}
-
-		// 		return map
-		// 	}, leftMap) as any
-		// }
-
-		// return acc
 	}, left)
+
+	return merged
+}
+
+export const compareMerge = (
+	left?: CompareData,
+	right?: CompareData
+): CompareData => {
+	const version = VERSION
+	if (!left || !right) {
+		return { version, schema: {} }
+	} else if (!left) {
+		return right
+	} else if (!right) {
+		return left
+	}
+
+	const data = compareMerge_(left.data, right.data)
+	return { ...right, data }
 }

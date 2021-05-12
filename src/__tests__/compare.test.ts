@@ -1,4 +1,4 @@
-import { compare, compareMerge } from '../compare'
+import { compare, CompareData, compareMerge } from '../compare'
 
 describe('compare', () => {
 	it('handles strings', () => {
@@ -507,30 +507,42 @@ describe('compare', () => {
 
 describe('mergeCompare', () => {
 	it('handles strings', () => {
-		const a = {
-			a: ['added', 'Testing2'],
-			c: ['modified', [true, false]],
-			e: {
-				ec: ['added', 'ok'],
-				ed: ['removed', 'ok']
-			},
-			f: { '2': ['removed', 'wer'] }
+		const a: CompareData = {
+			version: 2,
+			schema: {},
+			data: {
+				a: ['added', 'Testing2'],
+				c: ['modified', [true, false]],
+				e: {
+					ec: ['added', 'ok'],
+					ed: ['removed', 'ok']
+				},
+				f: { '2': ['removed', 'wer'] }
+			}
 		}
-		const b = {
-			a: ['added', 'Testing2a'],
-			b: ['removed', 23],
-			e: {
-				ec: ['added', 'ok'],
-				ed: ['removed', 'ok']
-			},
-			f: { '2': ['removed', 'wer'] }
+		const b: CompareData = {
+			version: 2,
+			schema: {},
+			data: {
+				a: ['added', 'Testing2a'],
+				b: ['removed', 23],
+				e: {
+					ec: ['added', 'ok'],
+					ed: ['removed', 'ok']
+				},
+				f: { '2': ['removed', 'wer'] }
+			}
 		}
-		const res = {
-			a: ['added', 'Testing2a'],
-			c: ['modified', [true, false]],
-			e: { ec: ['added', 'ok'], ed: ['removed', 'ok'] },
-			f: { '2': ['removed', 'wer'] },
-			b: ['removed', 23]
+		const res: CompareData = {
+			version: 2,
+			schema: {},
+			data: {
+				a: ['added', 'Testing2a'],
+				c: ['modified', [true, false]],
+				e: { ec: ['added', 'ok'], ed: ['removed', 'ok'] },
+				f: { '2': ['removed', 'wer'] },
+				b: ['removed', 23]
+			}
 		}
 		expect(compareMerge(a as any, b as any)).toStrictEqual(res)
 	})
