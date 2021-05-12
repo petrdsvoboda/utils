@@ -4,10 +4,16 @@ import { fromArray, merge, set } from './record'
 
 const VERSION = 2
 
-type CompareSchemaType = 'string' | 'number' | 'boolean' | 'date'
-type CompareSchemaObject = readonly [type: 'object', value: CompareSchema]
-type CompareSchemaArray = readonly [type: 'array', value: CompareSchemaType]
-type CompareSchemaObjectArray = readonly [
+export type CompareSchemaType = 'string' | 'number' | 'boolean' | 'date'
+export type CompareSchemaObject = readonly [
+	type: 'object',
+	value: CompareSchema
+]
+export type CompareSchemaArray = readonly [
+	type: 'array',
+	value: CompareSchemaType
+]
+export type CompareSchemaObjectArray = readonly [
 	type: 'array',
 	value: CompareSchema,
 	key?: string
@@ -24,9 +30,9 @@ export interface CompareObject {
 	[key: string]: any | CompareObject
 }
 
-type UnaryChange = [type: 'added' | 'removed', value: any]
-type BinaryChange = [type: 'modified', value: [any, any]]
-type Change = UnaryChange | BinaryChange
+export type UnaryChange = [type: 'added' | 'removed', value: any]
+export type BinaryChange = [type: 'modified', value: [any, any]]
+export type Change = UnaryChange | BinaryChange
 
 export interface CompareResult {
 	[key: string]: Change | CompareResult
@@ -131,13 +137,13 @@ const compareKey = (
 				if (['added', 'removed'].includes(currCompare[0])) {
 					return set(acc, [curr], currCompare)
 				} else {
-					const result = compare_(
+					const res = compare_(
 						arraySchema[curr] as any,
 						aArr[curr] as any,
 						bArr[curr] as any
 					)
-					if (Object.keys(result).length === 0) return changes
-					return set(acc, [curr], result)
+					if (Object.keys(res).length === 0) return acc
+					return set(acc, [curr], res)
 				}
 			},
 			{}

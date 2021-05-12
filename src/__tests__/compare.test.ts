@@ -502,6 +502,59 @@ describe('compare', () => {
 				]
 			}
 		})
+
+		const schema2 = {
+			name: 'string',
+			description: 'string',
+			deadline: 'date',
+			priority: 'string',
+			orderMethod: 'string',
+			comment: 'string',
+			attachmentId: 'number',
+			supplierId: 'number',
+			supplierEshop: 'string',
+			subitems: [
+				'array',
+				{
+					id: 'number',
+					name: 'string',
+					comment: 'string',
+					amount: 'number',
+					unit: 'string',
+					price: 'number',
+					currency: 'string',
+					numberId: 'number',
+					projectNumberId: 'number',
+					accountId: 'number',
+					departmentId: 'number'
+				},
+				'id'
+			],
+			supervisorId: 'number',
+			buId: 'number'
+		} as const
+		const a2 = {
+			name: 'foo',
+			subitems: [
+				{ id: 1, name: 'foo' },
+				{ id: 2, name: 'bar' }
+			]
+		}
+		const b2 = {
+			name: 'bar',
+			subitems: [
+				{ id: 1, name: 'foo' },
+				{ id: 2, name: 'bar' }
+			]
+		}
+
+		expect(compare(schema2, a2, b2)).toEqual({
+			version: 2,
+			schema: schema2,
+			data: {
+				name: ['modified', ['foo', 'bar']]
+			}
+		})
 	})
 })
 
